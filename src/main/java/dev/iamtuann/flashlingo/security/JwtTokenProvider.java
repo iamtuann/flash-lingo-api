@@ -1,8 +1,10 @@
 package dev.iamtuann.flashlingo.security;
 
+import dev.iamtuann.flashlingo.exception.APIException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -56,18 +58,14 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
-            // throw exception
         } catch (MalformedJwtException e) {
-            // throw exception
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid JWT Token");
         } catch (ExpiredJwtException e) {
-            // throw exception
+            throw new APIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
         } catch (UnsupportedJwtException e) {
-            // throw exception
+            throw new APIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
         } catch (IllegalArgumentException e) {
-            // throw exception
+            throw new APIException(HttpStatus.BAD_REQUEST, "Jwt claims string is null or empty");
         }
-
-        return false;
     }
 }
