@@ -2,7 +2,7 @@ package dev.iamtuann.flashlingo.config;
 
 import dev.iamtuann.flashlingo.security.JwtAuthenticationEntryPoint;
 import dev.iamtuann.flashlingo.security.JwtAuthenticationFilter;
-import dev.iamtuann.flashlingo.security.UserDetailServiceImpl;
+import dev.iamtuann.flashlingo.security.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +30,7 @@ import java.util.List;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    private final UserDetailServiceImpl userDetailService;
+    private final UserDetailsServiceImpl userDetailService;
 
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 

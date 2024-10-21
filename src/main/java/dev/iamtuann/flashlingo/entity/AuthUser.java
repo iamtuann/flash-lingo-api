@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -48,16 +47,14 @@ public class AuthUser {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Date createdAt = new Date();
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private Date updatedAt = new Date();
 
-    @ColumnDefault("1")
     @Column(name = "status")
-    private Integer status;
+    private Integer status = 1;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
