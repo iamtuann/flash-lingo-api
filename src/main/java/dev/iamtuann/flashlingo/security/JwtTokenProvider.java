@@ -1,7 +1,10 @@
 package dev.iamtuann.flashlingo.security;
 
+import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.exception.APIException;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -9,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -28,11 +33,31 @@ public class JwtTokenProvider {
         Date expireDate = new Date(currentDate.getTime() + jwtExpire);
 
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(expireDate)
+                .signWith(key())
                 .compact();
+    }
+
+    public String generateToken(AuthUser authUser){
+
+        String username = authUser.getEmail();
+
+        Date currentDate = new Date();
+
+        Date expireDate = new Date(currentDate.getTime() + jwtExpire);
+
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(expireDate)
+                .signWith(key())
+                .compact();
+    }
+
+    private Key key(){
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     public String getJwtFromRequest(HttpServletRequest request) {
@@ -48,15 +73,16 @@ public class JwtTokenProvider {
     public String getUsername(String token){
 
         return Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody()
+                .verifyWith((SecretKey) key())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().verifyWith((SecretKey) key()).build().parse(authToken);
             return true;
         } catch (MalformedJwtException e) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Invalid JWT Token");

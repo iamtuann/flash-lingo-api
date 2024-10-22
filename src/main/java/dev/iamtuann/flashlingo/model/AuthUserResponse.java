@@ -25,4 +25,12 @@ public class AuthUserResponse {
         this.lastName = userDetails.getLastName();
         this.token = token;
     }
+
+    public AuthUserResponse(AuthUser user, String token) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.token = token;
+    }
 }
