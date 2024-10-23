@@ -5,7 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.testing.json.MockJsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.entity.Role;
 import dev.iamtuann.flashlingo.enums.ERole;
@@ -34,17 +34,15 @@ public class GoogleOAuth2Service implements OAuth2Service {
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final GoogleIdTokenVerifier verifier;
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String clientId;
 
-    public GoogleOAuth2Service(AuthUserRepository authUserRepository, RoleRepository repository, JwtTokenProvider jwtTokenProvider) throws GeneralSecurityException, IOException {
+    public GoogleOAuth2Service(@Value("${app.google.client-id}") String clientId, AuthUserRepository authUserRepository, RoleRepository repository, JwtTokenProvider jwtTokenProvider) throws GeneralSecurityException, IOException {
         this.authUserRepository = authUserRepository;
         this.roleRepository = repository;
         this.jwtTokenProvider = jwtTokenProvider;
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-        JsonFactory jsonFactory = new MockJsonFactory();
+        JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
         this.verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Collections.singletonList(this.clientId))
+                .setAudience(Collections.singletonList(clientId))
                 .build();
     }
 
@@ -79,6 +77,9 @@ public class GoogleOAuth2Service implements OAuth2Service {
     public AuthUser createOrUpdateUser(AuthUser authUser) {
         Optional<AuthUser> existUser = authUserRepository.findByEmail(authUser.getEmail());
         if (existUser.isPresent()) {
+            if (existUser.get().getProvider().equals("System")) {
+                throw new APIException(HttpStatus.BAD_REQUEST, "Email is already used for an account on the system");
+            }
             existUser.get().setFirstName(authUser.getFirstName());
             existUser.get().setLastName(authUser.getLastName());
             existUser.get().setAvatarUrl(authUser.getAvatarUrl());
