@@ -15,6 +15,7 @@ import dev.iamtuann.flashlingo.service.AuthUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,16 +37,23 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public AuthUserResponse login(LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
-        return new AuthUserResponse((UserDetailsImpl) authentication.getPrincipal(), token);
+        if (!authUserRepository.existsByEmail(loginDto.getEmail())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email is not registered");
+        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtTokenProvider.generateToken(authentication);
+            return new AuthUserResponse((UserDetailsImpl) authentication.getPrincipal(), token);
+        } catch (BadCredentialsException ex) {
+            throw new APIException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
     }
 
     @Override
-    public String register(RegisterDto registerDto) {
+    public AuthUser register(RegisterDto registerDto) {
         if (authUserRepository.existsByEmail(registerDto.getEmail())) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Email is already exists!");
         }
@@ -58,7 +66,6 @@ public class AuthUserServiceImpl implements AuthUserService {
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName(ERole.USER.getName()));
         user.setRoles(roles);
-        authUserRepository.save(user);
-        return "User registered successfully!";
+        return authUserRepository.save(user);
     }
 }

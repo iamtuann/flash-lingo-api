@@ -1,5 +1,6 @@
 package dev.iamtuann.flashlingo.controller;
 
+import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.model.AuthUserResponse;
 import dev.iamtuann.flashlingo.model.request.LoginDto;
 import dev.iamtuann.flashlingo.model.request.RegisterDto;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @PostMapping(value = {"/register", "/signup"})
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
-        String response = authUserService.register(registerDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        AuthUser user = authUserService.register(registerDto);
+        return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
     }
 }
