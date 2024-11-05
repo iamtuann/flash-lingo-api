@@ -18,7 +18,7 @@ public class TopicMapperTest {
         topic.setId(1L);
         topic.setName("Test");
         topic.setSlug("test");
-        topic.setAuthUser(AuthUserMapperTest.mockAuthUser());
+        topic.setCreatedBy(AuthUserMapperTest.mockAuthUser());
         Set<Card> cards = new HashSet<>();
         cards.add(CardMapperTest.mockCard());
         topic.setCards(cards);
@@ -33,7 +33,7 @@ public class TopicMapperTest {
         assertNotNull(topicDto);
         assertEquals(topic.getId(), topicDto.getId());
         assertEquals(topic.getName(), topicDto.getName());
-        assertEquals(topic.getAuthUser().getId(), topicDto.getAuthUser().getId());
+        assertEquals(topic.getCreatedBy().getId(), topicDto.getCreatedBy().getId());
         assertNotNull(topicDto.getCards());
     }
 
@@ -45,7 +45,7 @@ public class TopicMapperTest {
         assertNotNull(topicDto);
         assertEquals(topic.getId(), topicDto.getId());
         assertEquals(topic.getName(), topicDto.getName());
-        assertEquals(topic.getAuthUser().getId(), topicDto.getAuthUser().getId());
+        assertEquals(topic.getCreatedBy().getId(), topicDto.getCreatedBy().getId());
         assertNull(topicDto.getCards());
     }
 }

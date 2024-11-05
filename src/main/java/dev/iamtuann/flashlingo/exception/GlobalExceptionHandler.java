@@ -28,6 +28,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetail, exception.getStatus());
     }
 
+    @ExceptionHandler(NoPermissionException.class)
+    public ResponseEntity<ErrorDetail> handleNoAccessException(NoPermissionException exception) {
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetail> handleGlobalException(Exception exception){
         ErrorDetail errorDetails = new ErrorDetail(new Date(), exception.getMessage());

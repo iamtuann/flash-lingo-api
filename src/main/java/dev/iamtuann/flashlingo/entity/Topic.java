@@ -26,7 +26,7 @@ public class Topic {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "auth_user_id", nullable = false)
-    private AuthUser authUser;
+    private AuthUser createdBy;
 
     @Column(name = "created_at")
     private Date createdAt = new Date();
@@ -36,6 +36,15 @@ public class Topic {
 
     @Column(name = "slug")
     private String slug;
+
+    @Column(name = "term_lang")
+    private String termLang;
+
+    @Column(name = "definition_lang")
+    private String defLang;
+
+    @Column(name = "status")
+    private Integer status;
 
     @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Card> cards;
