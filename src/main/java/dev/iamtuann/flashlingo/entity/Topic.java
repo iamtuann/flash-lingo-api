@@ -47,5 +47,5 @@ public class Topic {
     private Integer status;
 
     @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Card> cards;
+    private Set<Term> terms;
 }

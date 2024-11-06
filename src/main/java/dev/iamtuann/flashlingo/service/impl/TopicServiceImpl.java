@@ -41,13 +41,13 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Set<TopicDto> findAllTopicsCreated(Long userId) {
         Set<Topic> topics = topicRepository.findAllByCreatedById(userId);
-        return topics.stream().map(TopicMapper.INSTANCE::toDtoWithoutCards).collect(Collectors.toSet());
+        return topics.stream().map(TopicMapper.INSTANCE::toDtoWithoutTerms).collect(Collectors.toSet());
     }
 
     @Override
     public Set<TopicDto> findAllPublicTopicsByUserId(Long userId) {
         Set<Topic> topics = topicRepository.findAllByCreatedByIdAndStatus(userId, EStatusMode.PUBLIC.getValue());
-        return topics.stream().map(TopicMapper.INSTANCE::toDtoWithoutCards).collect(Collectors.toSet());
+        return topics.stream().map(TopicMapper.INSTANCE::toDtoWithoutTerms).collect(Collectors.toSet());
     }
 
     @Override

@@ -9,15 +9,15 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "card")
-public class Card {
+@Table(name = "term")
+public class Term {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "word", length = 500)
-    private String word;
+    @Column(name = "term", length = 500)
+    private String term;
 
     @Column(name = "definition", length = 500)
     private String definition;

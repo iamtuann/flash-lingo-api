@@ -23,5 +23,5 @@ public class TopicDto {
     private String termLang;
     private String defLang;
     private Integer status;
-    private Set<CardDto> cards;
+    private Set<TermDto> terms;
 }

@@ -1,6 +1,6 @@
 package dev.iamtuann.flashlingo.mapper;
 
-import dev.iamtuann.flashlingo.entity.Card;
+import dev.iamtuann.flashlingo.entity.Term;
 import dev.iamtuann.flashlingo.entity.Topic;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,9 @@ public class TopicMapperTest {
         topic.setName("Test");
         topic.setSlug("test");
         topic.setCreatedBy(AuthUserMapperTest.mockAuthUser());
-        Set<Card> cards = new HashSet<>();
-        cards.add(CardMapperTest.mockCard());
-        topic.setCards(cards);
+        Set<Term> terms = new HashSet<>();
+        terms.add(TermMapperTest.mockTerm());
+        topic.setTerms(terms);
         return topic;
     }
 
@@ -34,18 +34,18 @@ public class TopicMapperTest {
         assertEquals(topic.getId(), topicDto.getId());
         assertEquals(topic.getName(), topicDto.getName());
         assertEquals(topic.getCreatedBy().getId(), topicDto.getCreatedBy().getId());
-        assertNotNull(topicDto.getCards());
+        assertNotNull(topicDto.getTerms());
     }
 
     @Test
-    public void testTopicToTopicDtoWithoutCard() {
+    public void testTopicToTopicDtoWithoutTerms() {
         Topic topic = mockTopic();
-        TopicDto topicDto = topicMapper.toDtoWithoutCards(topic);
+        TopicDto topicDto = topicMapper.toDtoWithoutTerms(topic);
 
         assertNotNull(topicDto);
         assertEquals(topic.getId(), topicDto.getId());
         assertEquals(topic.getName(), topicDto.getName());
         assertEquals(topic.getCreatedBy().getId(), topicDto.getCreatedBy().getId());
-        assertNull(topicDto.getCards());
+        assertNull(topicDto.getTerms());
     }
 }

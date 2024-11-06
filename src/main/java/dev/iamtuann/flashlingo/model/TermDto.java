@@ -11,9 +11,9 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardDto {
+public class TermDto {
     private Long id;
-    private String word;
+    private String term;
     private String definition;
     private String imageUrl;
     private Integer rank;

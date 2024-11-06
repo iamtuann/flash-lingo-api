@@ -16,8 +16,8 @@ public interface TopicMapper {
 
     TopicDto toDto(Topic topic);
 
-    @Mapping(target = "cards", ignore = true)
-    TopicDto toDtoWithoutCards(Topic topic);
+    @Mapping(target = "terms", ignore = true)
+    TopicDto toDtoWithoutTerms(Topic topic);
 
     default void updateTopicFromRequest(TopicRequest request, @MappingTarget Topic topic) {
         if ( request == null ) {
