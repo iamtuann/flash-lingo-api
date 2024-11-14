@@ -22,7 +22,7 @@ public class TopicController {
         return ResponseEntity.ok(topicDto);
     }
 
-    @PutMapping("")
+    @PostMapping("")
     public ResponseEntity<TopicDto> saveTopic(@RequestBody TopicRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TopicDto topic = topicService.save(request, userDetails.getId());
         return new ResponseEntity<>(topic, HttpStatus.OK);

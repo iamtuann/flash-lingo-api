@@ -25,7 +25,7 @@ public class Term {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "rank")
+    @Column(name = "ranking")
     private Integer rank;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
