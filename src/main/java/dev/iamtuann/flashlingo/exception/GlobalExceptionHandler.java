@@ -34,6 +34,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorDetail> handleBadRequestException(BadRequestException exception) {
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetail> handleGlobalException(Exception exception){
         ErrorDetail errorDetails = new ErrorDetail(new Date(), exception.getMessage());

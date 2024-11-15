@@ -47,5 +47,6 @@ public class Topic {
     private Integer status;
 
     @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("rank")
     private Set<Term> terms;
 }

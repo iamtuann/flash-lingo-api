@@ -26,11 +26,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public TopicDto findTopicById(Long id, Long authUserId) {
-        Optional<Topic> topicOptional = topicRepository.findById(id);
-        if (topicOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Topic", "id", id);
-        }
-        Topic topic = topicOptional.get();
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Topic", "id", id));
+
         if (topic.getStatus().equals(EStatusMode.PUBLIC.getValue()) || topic.getCreatedBy().getId().equals(authUserId)) {
             return TopicMapper.INSTANCE.toDto(topic);
         } else {

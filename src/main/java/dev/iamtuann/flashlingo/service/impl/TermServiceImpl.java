@@ -1,6 +1,8 @@
 package dev.iamtuann.flashlingo.service.impl;
 
 import dev.iamtuann.flashlingo.entity.Term;
+import dev.iamtuann.flashlingo.entity.Topic;
+import dev.iamtuann.flashlingo.exception.BadRequestException;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.TermMapper;
@@ -31,22 +33,19 @@ public class TermServiceImpl implements TermService {
         }
         Term term;
         if (request.getId() == null) {
-            if (request.getRank() != null) {
-                termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, request.getRank());
-            }
-            term = new Term();
-            term.setTopic(topicRepository.findTopicById(request.getTopicId()));
+            term = createTerm(request);
         } else {
             term = termRepository.findByIdAndTopicId(request.getId(), request.getTopicId())
                     .orElseThrow(() -> new ResourceNotFoundException("Term", "id", request.getId()));
             this.changeRank(request.getTopicId(), term.getRank(), request.getRank());
+            termMapper.updateTermFormRequest(request, term);
         }
-        termMapper.updateTermFormRequest(request, term);
         Term newTerm = termRepository.save(term);
         return termMapper.toDto(newTerm);
     }
 
     @Override
+    @Transactional
     public void delete(TermRequest request, Long userId) {
         if (!checkPermission.editableTopic(request.getTopicId(), userId)) {
             throw new NoPermissionException("edit this topic");
@@ -54,6 +53,7 @@ public class TermServiceImpl implements TermService {
         Term term = termRepository.findByIdAndTopicId(request.getId(), request.getTopicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Term", "id", request.getId()));
         termRepository.delete(term);
+        termRepository.decrementRanks(term.getTopic().getId(), term.getRank(), Integer.MAX_VALUE);
     }
 
     public void changeRank(Long topicId, Integer oldRank, Integer newRank) {
@@ -65,5 +65,20 @@ public class TermServiceImpl implements TermService {
         } else if (newRank < oldRank) {
             termRepository.incrementRanks(topicId, oldRank, newRank);
         }
+    }
+
+    public Term createTerm(TermRequest request) {
+        Term term = new Term();
+        Topic topic = topicRepository.findTopicById(request.getTopicId());
+        if (request.getRank() == null) {
+            throw new BadRequestException("rank", null, "New term must have ranking");
+        } else if (request.getRank() > topic.getTerms().size()) {
+            throw new BadRequestException("rank", request.getRank(), "Rank cannot be larger size");
+        } else {
+            termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, request.getRank());
+            term.setTopic(topic);
+            termMapper.updateTermFormRequest(request, term);
+        }
+        return term;
     }
 }

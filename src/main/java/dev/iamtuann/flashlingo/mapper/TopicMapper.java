@@ -1,7 +1,9 @@
 package dev.iamtuann.flashlingo.mapper;
 
 import com.github.slugify.Slugify;
+import dev.iamtuann.flashlingo.entity.Term;
 import dev.iamtuann.flashlingo.entity.Topic;
+import dev.iamtuann.flashlingo.model.TermDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import org.mapstruct.Mapper;
@@ -15,6 +17,9 @@ public interface TopicMapper {
     Slugify slg = Slugify.builder().build();
 
     TopicDto toDto(Topic topic);
+
+    @Mapping(target = "topicId", source = "topic.id")
+    TermDto termToTermDto(Term term);
 
     @Mapping(target = "terms", ignore = true)
     TopicDto toDtoWithoutTerms(Topic topic);
