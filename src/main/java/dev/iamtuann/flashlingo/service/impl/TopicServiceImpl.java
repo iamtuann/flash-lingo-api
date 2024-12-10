@@ -10,6 +10,7 @@ import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import dev.iamtuann.flashlingo.repository.AuthUserRepository;
 import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.TopicService;
+import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +24,12 @@ import java.util.stream.Collectors;
 public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
     private final AuthUserRepository authUserRepository;
+    private final CheckPermission checkPermission;
 
     @Override
     public TopicDto findTopicById(Long id, Long authUserId) {
-        Topic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Topic", "id", id));
-
-        if (topic.getStatus().equals(EStatusMode.PUBLIC.getValue()) || topic.getCreatedBy().getId().equals(authUserId)) {
+        if (checkPermission.viewableTopic(id, authUserId)) {
+            Topic topic = topicRepository.findTopicById(id);
             return TopicMapper.INSTANCE.toDto(topic);
         } else {
             throw new NoPermissionException("access this resource");
@@ -51,13 +51,15 @@ public class TopicServiceImpl implements TopicService {
     @Override
     @Transactional
     public TopicDto save(TopicRequest request, Long userId) {
+        if (!checkPermission.editableTopic(request.getId(), userId)) {
+            throw new NoPermissionException("edit this topic");
+        }
         Topic topic = new Topic();
         if (request.getId() == null) {
             topic.setCreatedBy(authUserRepository.findAuthUserById(userId));
             topic.setStatus(EStatusMode.DRAFT.getValue());
         } else {
-            topic = topicRepository.findByIdAndCreatedById(request.getId(), userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Topic", "id", request.getId()));
+            topic = topicRepository.findTopicById(request.getId());
         }
         TopicMapper.INSTANCE.updateTopicFromRequest(request, topic);
         topic = topicRepository.save(topic);

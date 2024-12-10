@@ -24,4 +24,5 @@ public class TopicDto {
     private String defLang;
     private Integer status;
     private Set<TermDto> terms;
+    private Integer termsNumber;
 }

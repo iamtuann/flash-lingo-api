@@ -23,7 +23,7 @@ public class Folder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id")
-    private AuthUser authUser;
+    private AuthUser createdBy;
 
     @Lob
     @Column(name = "description")

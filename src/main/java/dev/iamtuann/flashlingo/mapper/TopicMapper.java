@@ -16,12 +16,14 @@ public interface TopicMapper {
     TopicMapper INSTANCE = Mappers.getMapper( TopicMapper.class );
     Slugify slg = Slugify.builder().build();
 
+    @Mapping(target = "termsNumber", expression = "java(topic.getTerms().size())")
     TopicDto toDto(Topic topic);
 
     @Mapping(target = "topicId", source = "topic.id")
     TermDto termToTermDto(Term term);
 
     @Mapping(target = "terms", ignore = true)
+    @Mapping(target = "termsNumber", expression = "java(topic.getTerms().size())")
     TopicDto toDtoWithoutTerms(Topic topic);
 
     default void updateTopicFromRequest(TopicRequest request, @MappingTarget Topic topic) {

@@ -21,7 +21,7 @@ public class FolderMapperTest {
         Set<Topic> topics = new HashSet<>();
         topics.add(TopicMapperTest.mockTopic());
         folder.setTopics(topics);
-        folder.setAuthUser(AuthUserMapperTest.mockAuthUser());
+        folder.setCreatedBy(AuthUserMapperTest.mockAuthUser());
         return folder;
     }
 
