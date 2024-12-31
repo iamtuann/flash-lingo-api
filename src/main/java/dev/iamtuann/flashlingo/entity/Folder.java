@@ -30,10 +30,10 @@ public class Folder {
     private String description;
 
     @Column(name = "created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt = new Date();
+    private Date updatedAt;
 
     @ColumnDefault("1")
     @Column(name = "status")
@@ -52,6 +52,12 @@ public class Folder {
 
     @PreUpdate
     public void preUpdate() {
+        this.updatedAt = new Date();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = new Date();
         this.updatedAt = new Date();
     }
 }

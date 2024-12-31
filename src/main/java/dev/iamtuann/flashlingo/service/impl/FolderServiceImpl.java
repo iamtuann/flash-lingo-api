@@ -5,13 +5,18 @@ import dev.iamtuann.flashlingo.enums.EStatusMode;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.mapper.FolderMapper;
 import dev.iamtuann.flashlingo.model.FolderDto;
+import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
+import dev.iamtuann.flashlingo.repository.AuthUserRepository;
 import dev.iamtuann.flashlingo.repository.FolderRepository;
+import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +26,8 @@ public class FolderServiceImpl implements FolderService {
     private final FolderRepository folderRepository;
     private final CheckPermission checkPermission;
     private final FolderMapper folderMapper = FolderMapper.INSTANCE;
+    private final AuthUserRepository authUserRepository;
+    private final TopicRepository topicRepository;
 
     @Override
     public Set<FolderDto> findAllFoldersCreated(long userId) {
@@ -48,6 +55,8 @@ public class FolderServiceImpl implements FolderService {
     public FolderDto create(FolderRequest request, long userId) {
         Folder folder = new Folder();
         folder.setStatus(EStatusMode.PUBLIC.getValue());
+        folder.setCreatedBy(authUserRepository.findAuthUserById(userId));
+        folder.setTopics(new HashSet<>());
         folderMapper.updateFolderFromRequest(request, folder);
         folder = folderRepository.save(folder);
         return folderMapper.toDto(folder);
@@ -71,5 +80,23 @@ public class FolderServiceImpl implements FolderService {
         } else {
             throw new NoPermissionException("delete this folder");
         }
+    }
+
+    @Override
+    public FolderDto addTopicsToFolder(AddTopicRequest request, long userId) {
+        if (!checkPermission.editableFolder(request.getFolderId(), userId)) {
+            throw new NoPermissionException("edit this folder");
+        }
+        Folder folder = folderRepository.findFolderById(request.getFolderId());
+        for(Long id : request.getTopicIds()) {
+            if(checkPermission.viewableTopic(id, userId)) {
+                folder.getTopics().add(topicRepository.findTopicById(id));
+            } else {
+                throw new NoPermissionException("access this topic");
+            }
+        }
+        folder.setUpdatedAt(new Date());
+        folderRepository.save(folder);
+        return folderMapper.toDto(folder);
     }
 }

@@ -29,10 +29,10 @@ public class Topic {
     private AuthUser createdBy;
 
     @Column(name = "created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt = new Date();
+    private Date updatedAt;
 
     @Column(name = "slug")
     private String slug;
@@ -49,4 +49,15 @@ public class Topic {
     @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("rank")
     private Set<Term> terms;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = new Date();
+    }
 }

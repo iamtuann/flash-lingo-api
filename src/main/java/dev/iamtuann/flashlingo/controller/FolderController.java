@@ -1,6 +1,7 @@
 package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.model.FolderDto;
+import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.FolderService;
@@ -32,5 +33,17 @@ public class FolderController {
     public ResponseEntity<FolderDto> updateFolder(@PathVariable Long id, @RequestBody FolderRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         FolderDto FolderDto = folderService.update(id, request, userDetails.getId());
         return new ResponseEntity<>(FolderDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteFolder(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        folderService.delete(id, userDetails.getId());
+        return ResponseEntity.ok("Delete folder successfully!");
+    }
+
+    @PostMapping("/topics")
+    public ResponseEntity<FolderDto> addTopicToFolder(@RequestBody AddTopicRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        FolderDto folderDto = folderService.addTopicsToFolder(request, userDetails.getId());
+        return ResponseEntity.ok(folderDto);
     }
 }

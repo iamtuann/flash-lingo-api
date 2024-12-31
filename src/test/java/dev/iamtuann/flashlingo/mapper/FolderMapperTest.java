@@ -33,18 +33,18 @@ public class FolderMapperTest {
         assertEquals(folder.getId(), folderDto.getId());
         assertEquals(folder.getName(), folderDto.getName());
         assertEquals(folder.getSlug(), folderDto.getSlug());
-        assertNotNull(folderDto.getTopics());
-        assertEquals(1, folderDto.getTopics().size());
+        assertNotNull(folderDto.getTopicIds());
+        assertEquals(1, folderDto.getTopicIds().size());
     }
 
     @Test
     public void testFolderToFolderDtoWithoutTopics() {
         Folder folder = mockFolder();
-        FolderDto folderDto = folderMapper.toDtoWithoutTopics(folder);
+        FolderDto folderDto = folderMapper.toDto(folder);
         assertNotNull(folderDto);
         assertEquals(folder.getId(), folderDto.getId());
         assertEquals(folder.getName(), folderDto.getName());
         assertEquals(folder.getSlug(), folderDto.getSlug());
-        assertNull(folderDto.getTopics());
+        assertNull(folderDto.getTopicIds());
     }
 }

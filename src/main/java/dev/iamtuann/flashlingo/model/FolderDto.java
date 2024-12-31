@@ -11,10 +11,11 @@ import java.util.Set;
 public class FolderDto {
     private Long id;
     private String name;
-    private AuthUserDto authUser;
+    private AuthUserDto createdBy;
     private String description;
     private Date createdAt;
     private Date updatedAt;
     private String slug;
-    private Set<TopicDto> topics;
+    private Integer itemsNumber;
+    private Set<Long> topicIds;
 }
