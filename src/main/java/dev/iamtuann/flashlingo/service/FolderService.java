@@ -3,16 +3,15 @@ package dev.iamtuann.flashlingo.service;
 import dev.iamtuann.flashlingo.model.FolderDto;
 import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Set;
 
 public interface FolderService {
 
-    Set<FolderDto> findAllFoldersCreated(long userId);
-
-    Set<FolderDto> findAllPublicFoldersByUserId(long userId);
-
     FolderDto findFolderById(long id, Long userId);
+
+    Page<FolderDto> searchFolders(String name, Long userId, Long authId, Pageable pageable);
 
     FolderDto create(FolderRequest request, long userId);
 

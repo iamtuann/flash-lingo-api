@@ -15,4 +15,5 @@ public class AuthUserDto {
     private String avatarUrl;
     private Date createdAt;
     private Date updatedAt;
+    private Integer status;
 }

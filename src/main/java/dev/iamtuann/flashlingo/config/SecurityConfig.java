@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("api/users/topics", "api/users/folders").authenticated()
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider());

@@ -2,7 +2,7 @@ package dev.iamtuann.flashlingo.utils;
 
 import dev.iamtuann.flashlingo.entity.Folder;
 import dev.iamtuann.flashlingo.entity.Topic;
-import dev.iamtuann.flashlingo.enums.EStatusMode;
+import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.repository.FolderRepository;
 import dev.iamtuann.flashlingo.repository.TopicRepository;
@@ -30,7 +30,7 @@ public class CheckPermission {
             throw new ResourceNotFoundException("Topic", "id", topicId);
         }
         Topic topic = topicRepository.findTopicById(topicId);
-        return topic.getStatus().equals(EStatusMode.PUBLIC.getValue()) || topic.getCreatedBy().getId().equals(userId);
+        return topic.getStatus().equals(EStatus.PUBLIC.getValue()) || topic.getCreatedBy().getId().equals(userId);
     }
 
     public boolean viewableFolder(Long folderId, Long userId) {
@@ -38,11 +38,11 @@ public class CheckPermission {
             throw new ResourceNotFoundException("Folder", "id", folderId);
         }
         Folder folder = folderRepository.findFolderById(folderId);
-        return folder.getStatus().equals(EStatusMode.PUBLIC.getValue()) || folder.getCreatedBy().getId().equals(userId);
+        return folder.getStatus().equals(EStatus.PUBLIC.getValue()) || folder.getCreatedBy().getId().equals(userId);
     }
 
     public boolean editableFolder(Long folderId, Long userId) {
-        if (folderId == null)  throw new IllegalArgumentException("folderId is not null");;
+        if (folderId == null)  throw new IllegalArgumentException("folderId is not null");
         if (userId == null) return false;
         if (!folderRepository.existsById(folderId)) {
             throw new ResourceNotFoundException("Folder", "id", folderId);

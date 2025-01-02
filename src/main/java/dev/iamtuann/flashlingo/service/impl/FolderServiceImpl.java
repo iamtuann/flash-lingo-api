@@ -1,7 +1,7 @@
 package dev.iamtuann.flashlingo.service.impl;
 
 import dev.iamtuann.flashlingo.entity.Folder;
-import dev.iamtuann.flashlingo.enums.EStatusMode;
+import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.mapper.FolderMapper;
 import dev.iamtuann.flashlingo.model.FolderDto;
@@ -13,12 +13,12 @@ import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -28,18 +28,6 @@ public class FolderServiceImpl implements FolderService {
     private final FolderMapper folderMapper = FolderMapper.INSTANCE;
     private final AuthUserRepository authUserRepository;
     private final TopicRepository topicRepository;
-
-    @Override
-    public Set<FolderDto> findAllFoldersCreated(long userId) {
-        Set<Folder> folders = folderRepository.findAllByCreatedById(userId);
-        return folders.stream().map(folderMapper::toDto).collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<FolderDto> findAllPublicFoldersByUserId(long userId) {
-        Set<Folder> folders = folderRepository.findAllByCreatedByIdAndStatus(userId, EStatusMode.PUBLIC.getValue());
-        return folders.stream().map(folderMapper::toDto).collect(Collectors.toSet());
-    }
 
     @Override
     public FolderDto findFolderById(long id, Long userId) {
@@ -52,9 +40,21 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
+    public Page<FolderDto> searchFolders(String name, Long userId, Long authId, Pageable pageable) {
+        Integer status = EStatus.PUBLIC.getValue();
+        if (authId != null && Objects.equals(userId, authId)) {
+            status = null;
+        }
+        Page<Folder> folderPage = folderRepository.searchFolders(name, status, userId, pageable);
+        List<FolderDto> folders = folderPage.stream()
+                .map(folderMapper::toDto).toList();
+        return new PageImpl<>(folders, pageable, folderPage.getTotalElements());
+    }
+
+    @Override
     public FolderDto create(FolderRequest request, long userId) {
         Folder folder = new Folder();
-        folder.setStatus(EStatusMode.PUBLIC.getValue());
+        folder.setStatus(EStatus.PUBLIC.getValue());
         folder.setCreatedBy(authUserRepository.findAuthUserById(userId));
         folder.setTopics(new HashSet<>());
         folderMapper.updateFolderFromRequest(request, folder);

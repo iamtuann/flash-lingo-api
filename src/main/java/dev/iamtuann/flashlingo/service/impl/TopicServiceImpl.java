@@ -2,7 +2,7 @@ package dev.iamtuann.flashlingo.service.impl;
 
 import dev.iamtuann.flashlingo.entity.Folder;
 import dev.iamtuann.flashlingo.entity.Topic;
-import dev.iamtuann.flashlingo.enums.EStatusMode;
+import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.TopicMapper;
@@ -46,7 +46,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Page<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable) {
-        Integer status = EStatusMode.PUBLIC.getValue();
+        Integer status = EStatus.PUBLIC.getValue();
         if (folderId != null) {
             if (checkPermission.viewableFolder(folderId, authId)) {
                 Folder folder = folderRepository.findFolderById(folderId);
@@ -74,7 +74,7 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = new Topic();
         if (request.getId() == null) {
             topic.setCreatedBy(authUserRepository.findAuthUserById(userId));
-            topic.setStatus(EStatusMode.DRAFT.getValue());
+            topic.setStatus(EStatus.DRAFT.getValue());
         } else {
             topic = topicRepository.findTopicById(request.getId());
         }
