@@ -2,15 +2,13 @@ package dev.iamtuann.flashlingo.service;
 
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
-
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TopicService {
     TopicDto findTopicById(Long id, Long authUserId);
 
-    Set<TopicDto> findAllTopicsCreated(Long userId);
-
-    Set<TopicDto> findAllPublicTopicsByUserId(Long userId);
+    Page<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable);
 
     TopicDto save(TopicRequest request, Long userId);
 

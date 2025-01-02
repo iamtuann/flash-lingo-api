@@ -50,6 +50,9 @@ public class Topic {
     @OrderBy("rank")
     private Set<Term> terms;
 
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "topics")
+    private Set<Folder> folders;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = new Date();
