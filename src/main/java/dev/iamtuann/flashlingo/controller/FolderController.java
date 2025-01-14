@@ -1,6 +1,7 @@
 package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.model.FolderDto;
+import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
@@ -9,7 +10,6 @@ import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.utils.PageUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +50,7 @@ public class FolderController {
 
 
     @GetMapping("{id}/topics")
-    public ResponseEntity<Page<TopicDto>> getTopicsOfFolder(
+    public ResponseEntity<PageDto<TopicDto>> getTopicsOfFolder(
             @PathVariable(value = "id") Long folderId,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
@@ -61,7 +61,7 @@ public class FolderController {
 
         Long authId = userDetails != null ? userDetails.getId() : null;
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<TopicDto> topics = topicService.searchTopics(name, folderId, null, authId, pageable);
+        PageDto<TopicDto> topics = topicService.searchTopics(name, folderId, null, authId, pageable);
         return ResponseEntity.ok(topics);
     }
 

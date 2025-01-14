@@ -3,6 +3,7 @@ package dev.iamtuann.flashlingo.controller;
 import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.FolderDto;
+import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.FolderService;
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/topics")
-    public ResponseEntity<Page<TopicDto>> searchAuthUserTopics(
+    public ResponseEntity<PageDto<TopicDto>> searchAuthUserTopics(
             @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
@@ -55,7 +56,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<TopicDto> topics = topicService.searchTopics(name, null, userDetails.getId(), userDetails.getId(), pageable);
+        PageDto<TopicDto> topics = topicService.searchTopics(name, null, userDetails.getId(), userDetails.getId(), pageable);
         return ResponseEntity.ok(topics);
     }
 
@@ -74,7 +75,7 @@ public class UserController {
     }
 
     @GetMapping("{id}/topics")
-    public ResponseEntity<Page<TopicDto>> searchUserTopics(
+    public ResponseEntity<PageDto<TopicDto>> searchUserTopics(
             @PathVariable(value = "id") Long userId,
             @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
@@ -85,7 +86,7 @@ public class UserController {
     ) {
         Long authId = userDetails != null ? userDetails.getId() : null;
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<TopicDto> topics = topicService.searchTopics(name, null, userId, authId, pageable);
+        PageDto<TopicDto> topics = topicService.searchTopics(name, null, userId, authId, pageable);
         return ResponseEntity.ok(topics);
     }
 

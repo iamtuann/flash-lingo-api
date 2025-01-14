@@ -6,6 +6,7 @@ import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.TopicMapper;
+import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import dev.iamtuann.flashlingo.repository.AuthUserRepository;
@@ -14,8 +15,9 @@ import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class TopicServiceImpl implements TopicService {
     private final FolderRepository folderRepository;
 
     @Override
+    @Cacheable(value = "topics", key = "#id")
     public TopicDto findTopicById(Long id, Long authUserId) {
         if (checkPermission.viewableTopic(id, authUserId)) {
             Topic topic = topicRepository.findTopicById(id);
@@ -45,7 +48,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Page<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable) {
+    @Cacheable(value = "topics")
+    public PageDto<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable) {
         Integer status = EStatus.PUBLIC.getValue();
         if (folderId != null) {
             if (checkPermission.viewableFolder(folderId, authId)) {
@@ -61,12 +65,13 @@ public class TopicServiceImpl implements TopicService {
         Page<Topic> topicPage = topicRepository.searchTopics(name, status, folderId, userId, pageable);
         List<TopicDto> topics =topicPage.stream()
                 .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
-        return new PageImpl<>(topics, pageable, topicPage.getTotalElements());
+        return new PageDto<>(topics, topicPage);
     }
 
 
     @Override
     @Transactional
+    @CachePut(value = "topics", key = "#request.id")
     public TopicDto save(TopicRequest request, Long userId) {
         if (!checkPermission.editableTopic(request.getId(), userId)) {
             throw new NoPermissionException("edit this topic");
