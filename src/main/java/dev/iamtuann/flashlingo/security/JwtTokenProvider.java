@@ -87,7 +87,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Invalid JWT Token");
         } catch (ExpiredJwtException e) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
+            throw new APIException(HttpStatus.UNAUTHORIZED, "Expired JWT token");
         } catch (UnsupportedJwtException e) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
         } catch (IllegalArgumentException e) {
