@@ -5,6 +5,7 @@ import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.mapper.FolderMapper;
 import dev.iamtuann.flashlingo.model.FolderDto;
+import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
 import dev.iamtuann.flashlingo.repository.AuthUserRepository;
@@ -14,7 +15,6 @@ import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Page<FolderDto> searchFolders(String name, Long userId, Long authId, Pageable pageable) {
+    public PageDto<FolderDto> searchFolders(String name, Long userId, Long authId, Pageable pageable) {
         Integer status = EStatus.PUBLIC.getValue();
         if (authId != null && Objects.equals(userId, authId)) {
             status = null;
@@ -48,7 +48,7 @@ public class FolderServiceImpl implements FolderService {
         Page<Folder> folderPage = folderRepository.searchFolders(name, status, userId, pageable);
         List<FolderDto> folders = folderPage.stream()
                 .map(folderMapper::toDto).toList();
-        return new PageImpl<>(folders, pageable, folderPage.getTotalElements());
+        return new PageDto<>(folders, folderPage);
     }
 
     @Override

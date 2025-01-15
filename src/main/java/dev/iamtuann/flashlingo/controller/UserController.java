@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping("/folders")
-    public ResponseEntity<Page<FolderDto>> searchAuthUserFolders(
+    public ResponseEntity<PageDto<FolderDto>> searchAuthUserFolders(
             @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
@@ -70,7 +70,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<FolderDto> folders = folderService.searchFolders(name, userDetails.getId(), userDetails.getId(), pageable);
+        PageDto<FolderDto> folders = folderService.searchFolders(name, userDetails.getId(), userDetails.getId(), pageable);
         return ResponseEntity.ok(folders);
     }
 
@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @GetMapping("{id}/folders")
-    public ResponseEntity<Page<FolderDto>> searchUserFolders(
+    public ResponseEntity<PageDto<FolderDto>> searchUserFolders(
             @PathVariable(value = "id") Long userId,
             @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
@@ -102,7 +102,7 @@ public class UserController {
     ) {
         Long authId = userDetails != null ? userDetails.getId() : null;
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<FolderDto> folders = folderService.searchFolders(name, userId, authId, pageable);
+        PageDto<FolderDto> folders = folderService.searchFolders(name, userId, authId, pageable);
         return ResponseEntity.ok(folders);
     }
 }

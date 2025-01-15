@@ -1,6 +1,5 @@
 package dev.iamtuann.flashlingo.service.impl;
 
-import dev.iamtuann.flashlingo.entity.Folder;
 import dev.iamtuann.flashlingo.entity.Topic;
 import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
@@ -10,7 +9,6 @@ import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import dev.iamtuann.flashlingo.repository.AuthUserRepository;
-import dev.iamtuann.flashlingo.repository.FolderRepository;
 import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,7 +31,6 @@ public class TopicServiceImpl implements TopicService {
     private final AuthUserRepository authUserRepository;
     private final CheckPermission checkPermission;
     private final TopicMapper topicMapper = TopicMapper.INSTANCE;
-    private final FolderRepository folderRepository;
 
     @Override
     @Cacheable(value = "topics", key = "#id")
@@ -50,19 +46,11 @@ public class TopicServiceImpl implements TopicService {
     @Override
     @Cacheable(value = "topics")
     public PageDto<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable) {
-        Integer status = EStatus.PUBLIC.getValue();
-        if (folderId != null) {
-            if (checkPermission.viewableFolder(folderId, authId)) {
-                Folder folder = folderRepository.findFolderById(folderId);
-                userId = folder.getCreatedBy().getId();
-            } else {
-                throw new NoPermissionException("access this folder");
-            }
+//        Integer status = EStatus.PUBLIC.getValue();
+        if (folderId != null && !checkPermission.viewableFolder(folderId, authId)) {
+            throw new NoPermissionException("access this folder");
         }
-        if (authId != null && Objects.equals(userId, authId)) {
-            status = null;
-        }
-        Page<Topic> topicPage = topicRepository.searchTopics(name, status, folderId, userId, pageable);
+        Page<Topic> topicPage = topicRepository.searchTopics(name, folderId, userId, pageable);
         List<TopicDto> topics =topicPage.stream()
                 .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
         return new PageDto<>(topics, topicPage);

@@ -1,8 +1,10 @@
 package dev.iamtuann.flashlingo.mapper;
 
 import com.github.slugify.Slugify;
+import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.entity.Term;
 import dev.iamtuann.flashlingo.entity.Topic;
+import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.TermDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
@@ -25,6 +27,11 @@ public interface TopicMapper {
     @Mapping(target = "terms", ignore = true)
     @Mapping(target = "termsNumber", expression = "java(topic.getTerms().size())")
     TopicDto toDtoWithoutTerms(Topic topic);
+
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    AuthUserDto AuthUserToAuthUserDto(AuthUser authUser);
 
     default void updateTopicFromRequest(TopicRequest request, @MappingTarget Topic topic) {
         if ( request == null ) {

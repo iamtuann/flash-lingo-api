@@ -17,11 +17,10 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     @Query(value = "SELECT t FROM Topic t " +
             "LEFT JOIN t.folders f " +
             "WHERE (:name IS NULL OR :name = '' OR (t.name LIKE CONCAT('%', :name, '%'))) " +
-            "AND (:status IS NULL OR t.status = :status) " +
             "AND (:folderId IS NULL OR (:folderId = f.id)) " +
-            "AND (:userId IS NULL OR t.createdBy.id = :userId)" )
+            "AND (:userId IS NULL OR t.createdBy.id = :userId) " +
+            "AND (t.status <> 2) ")
     Page<Topic> searchTopics(@Param("name") String name,
-                             @Param("status") Integer status,
                              @Param("folderId") Long folderId,
                              @Param("userId") Long userId,
                              Pageable pageable);
