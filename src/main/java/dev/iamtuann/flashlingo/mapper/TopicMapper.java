@@ -37,7 +37,7 @@ public interface TopicMapper {
         if ( request == null ) {
             return;
         }
-        if ( request.getName() != null ) {
+        if ( request.getName() != null && !request.getName().isBlank() ) {
             topic.setName( request.getName() );
             topic.setSlug(slg.slugify(request.getName()));
         }

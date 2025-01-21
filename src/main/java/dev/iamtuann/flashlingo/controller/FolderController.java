@@ -9,6 +9,7 @@ import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.utils.PageUtil;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class FolderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<FolderDto> createFolder(@RequestBody FolderRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<FolderDto> createFolder(@Valid @RequestBody FolderRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         FolderDto FolderDto = folderService.create(request, userDetails.getId());
         return new ResponseEntity<>(FolderDto, HttpStatus.OK);
     }

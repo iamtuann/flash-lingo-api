@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    @CachePut(value = "topics", key = "#request.id")
+    @CachePut(value = "topics", key = "#result.id")
     public TopicDto save(TopicRequest request, Long userId) {
         if (!checkPermission.editableTopic(request.getId(), userId)) {
             throw new NoPermissionException("edit this topic");
@@ -68,6 +69,8 @@ public class TopicServiceImpl implements TopicService {
         if (request.getId() == null) {
             topic.setCreatedBy(authUserRepository.findAuthUserById(userId));
             topic.setStatus(EStatus.DRAFT.getValue());
+            if (request.getName() == null || request.getName().isBlank()) topic.setName("New topic");
+            topic.setTerms(new HashSet<>());
         } else {
             topic = topicRepository.findTopicById(request.getId());
         }
