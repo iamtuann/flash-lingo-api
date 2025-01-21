@@ -1,7 +1,9 @@
 package dev.iamtuann.flashlingo.service.impl;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -35,6 +37,13 @@ public class GoogleOAuth2Service implements OAuth2Service {
     private final JwtTokenProvider jwtTokenProvider;
     private final GoogleIdTokenVerifier verifier;
 
+    @Value("${app.google.client-id}")
+    private String clientId;
+    @Value("${app.google.client-secret}")
+    private String clientSecret;
+    @Value("${app.google.redirect_uri}")
+    private String redirectUri;
+
     public GoogleOAuth2Service(@Value("${app.google.client-id}") String clientId, AuthUserRepository authUserRepository, RoleRepository repository, JwtTokenProvider jwtTokenProvider) throws GeneralSecurityException, IOException {
         this.authUserRepository = authUserRepository;
         this.roleRepository = repository;
@@ -44,6 +53,24 @@ public class GoogleOAuth2Service implements OAuth2Service {
         this.verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 .setAudience(Collections.singletonList(clientId))
                 .build();
+    }
+
+    @Override
+    public String getIdToken(String code) {
+        if (code == null) throw new APIException(HttpStatus.UNAUTHORIZED, "Authorization code is not valid");
+        try {
+            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                    new NetHttpTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    this.clientId,
+                    this.clientSecret,
+                    code,
+                    this.redirectUri
+            ).execute();
+            return tokenResponse.getIdToken();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -65,7 +92,8 @@ public class GoogleOAuth2Service implements OAuth2Service {
 
     @Override
     @Transactional
-    public AuthUserResponse loginOAuth(String idToken) {
+    public AuthUserResponse loginOAuth(String code) {
+        String idToken = this.getIdToken(code);
         AuthUser authUser = this.verifyIdToken(idToken);
         authUser = createOrUpdateUser(authUser);
         String token = jwtTokenProvider.generateToken(authUser);

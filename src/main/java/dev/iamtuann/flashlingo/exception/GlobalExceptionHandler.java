@@ -25,25 +25,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetail> handleResourceNotFoundException(ResourceNotFoundException exception) {
-        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), HttpStatus.NOT_FOUND.value(), exception.getMessage());
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(APIException.class)
     public ResponseEntity<ErrorDetail> handleAPIException(APIException exception) {
-        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getStatus().value(), exception.getMessage());
         return new ResponseEntity<>(errorDetail, exception.getStatus());
     }
 
     @ExceptionHandler(NoPermissionException.class)
     public ResponseEntity<ErrorDetail> handleNoAccessException(NoPermissionException exception) {
-        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), HttpStatus.FORBIDDEN.value(), exception.getMessage());
         return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorDetail> handleBadRequestException(BadRequestException exception) {
-        ErrorDetail errorDetail = new ErrorDetail(new Date(), exception.getMessage());
+        ErrorDetail errorDetail = new ErrorDetail(new Date(), HttpStatus.BAD_REQUEST.value(), exception.getMessage());
         return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
     }
 
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetail> handleGlobalException(Exception exception){
-        ErrorDetail errorDetails = new ErrorDetail(new Date(), exception.getMessage());
+        ErrorDetail errorDetails = new ErrorDetail(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
         logger.error("", exception);
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -13,5 +13,6 @@ import java.util.Date;
 @Setter
 public class ErrorDetail {
     private Date timestamp;
+    private Integer status;
     private String message;
 }
