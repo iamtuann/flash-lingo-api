@@ -10,11 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("api/terms")
 public class TermController {
     private final TermService termService;
+
+    @GetMapping("")
+    public ResponseEntity<List<TermDto>> getTermsTopic(@RequestParam(value = "topicId") long topicId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<TermDto> terms = termService.findAllByTopicId(topicId, userDetails != null ? userDetails.getId() : null);
+        return ResponseEntity.ok(terms);
+    }
 
     @PostMapping("")
     public ResponseEntity<TermDto> saveTerm(@Valid @RequestBody TermRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {

@@ -16,6 +16,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
@@ -42,6 +45,15 @@ public class TermServiceImpl implements TermService {
         }
         Term newTerm = termRepository.save(term);
         return termMapper.toDto(newTerm);
+    }
+
+    @Override
+    public List<TermDto> findAllByTopicId(Long topicId, Long userId) {
+        if (!checkPermission.viewableTopic(topicId, userId)) {
+            throw new NoPermissionException("view this topic");
+        }
+        List<Term> terms = termRepository.findAllByTopicIdOrderByRankAsc(topicId);
+        return terms.stream().map(termMapper::toDto).collect(Collectors.toList());
     }
 
     @Override

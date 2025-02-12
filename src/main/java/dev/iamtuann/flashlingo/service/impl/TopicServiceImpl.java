@@ -38,7 +38,7 @@ public class TopicServiceImpl implements TopicService {
     public TopicDto findTopicById(Long id, Long authUserId) {
         if (checkPermission.viewableTopic(id, authUserId)) {
             Topic topic = topicRepository.findTopicById(id);
-            return topicMapper.toDto(topic);
+            return topicMapper.toDtoWithoutTerms(topic);
         } else {
             throw new NoPermissionException("access this resource");
         }

@@ -23,6 +23,7 @@ public class UserDetailsImpl implements UserDetails {
     private String firstName;
     private String lastName;
     private String password;
+    private String avatarUrl;
     private Set<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(AuthUser user) {
@@ -36,6 +37,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPassword(),
+                user.getAvatarUrl(),
                 authorities
         );
     }

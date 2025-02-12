@@ -13,9 +13,7 @@ import lombok.Setter;
 public class TermRequest {
     private Long id;
     private Long topicId;
-    @NotBlank(message = "Term is required")
     private String term;
-    @NotBlank(message = "Definition is required")
     private String definition;
     private Integer rank;
 }
