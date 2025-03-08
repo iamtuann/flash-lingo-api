@@ -19,10 +19,11 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
             "WHERE (:name IS NULL OR :name = '' OR (t.name LIKE CONCAT('%', :name, '%'))) " +
             "AND (:folderId IS NULL OR (:folderId = f.id)) " +
             "AND (:userId IS NULL OR t.createdBy.id = :userId) " +
-            "AND (t.status <> 2) ")
+            "AND (:status IS NULL OR t.status = :status) ")
     Page<Topic> searchTopics(@Param("name") String name,
                              @Param("folderId") Long folderId,
                              @Param("userId") Long userId,
+                             @Param("status") Integer status,
                              Pageable pageable);
 
     Optional<Topic> findByIdAndCreatedById(long id, long userId);

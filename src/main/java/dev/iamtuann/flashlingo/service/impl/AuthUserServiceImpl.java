@@ -4,6 +4,8 @@ import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.entity.Role;
 import dev.iamtuann.flashlingo.enums.ERole;
 import dev.iamtuann.flashlingo.exception.APIException;
+import dev.iamtuann.flashlingo.mapper.AuthUserMapper;
+import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.AuthUserResponse;
 import dev.iamtuann.flashlingo.model.request.LoginDto;
 import dev.iamtuann.flashlingo.model.request.RegisterDto;
@@ -34,6 +36,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final AuthUserMapper authUserMapper = AuthUserMapper.INSTANCE;
 
     @Override
     public AuthUserResponse login(LoginDto loginDto) {
@@ -67,5 +70,11 @@ public class AuthUserServiceImpl implements AuthUserService {
         roles.add(roleRepository.findByName(ERole.USER.getName()));
         user.setRoles(roles);
         return authUserRepository.save(user);
+    }
+
+    @Override
+    public AuthUserDto getUserById(Long id) {
+        AuthUser authUser = authUserRepository.findAuthUserById(id);
+        return authUserMapper.toDto(authUser);
     }
 }

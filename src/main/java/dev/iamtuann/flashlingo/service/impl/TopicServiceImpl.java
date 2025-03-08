@@ -51,7 +51,12 @@ public class TopicServiceImpl implements TopicService {
         if (folderId != null && !checkPermission.viewableFolder(folderId, authId)) {
             throw new NoPermissionException("access this folder");
         }
-        Page<Topic> topicPage = topicRepository.searchTopics(name, folderId, userId, pageable);
+        Page<Topic> topicPage;
+        if (authId != null && authId.equals(userId)) {
+            topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
+        } else {
+            topicPage = topicRepository.searchTopics(name, folderId, userId, EStatus.PUBLIC.getValue(), pageable);
+        }
         List<TopicDto> topics =topicPage.stream()
                 .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
         return new PageDto<>(topics, topicPage);
