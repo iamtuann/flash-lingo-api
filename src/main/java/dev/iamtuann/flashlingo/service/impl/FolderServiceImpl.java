@@ -14,6 +14,7 @@ import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.FolderService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -83,6 +84,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
+    @CacheEvict(value = "topics", allEntries = true)
     public FolderDto addTopicsToFolder(AddTopicRequest request, long userId) {
         if (!checkPermission.editableFolder(request.getFolderId(), userId)) {
             throw new NoPermissionException("edit this folder");

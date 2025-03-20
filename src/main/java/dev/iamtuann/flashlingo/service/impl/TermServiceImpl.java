@@ -13,6 +13,7 @@ import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.TermService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class TermServiceImpl implements TermService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "topics", key = "#request.topicId")
     public TermDto save(TermRequest request, Long userId) {
         if (!checkPermission.editableTopic(request.getTopicId(), userId)) {
             throw new NoPermissionException("edit this topic");

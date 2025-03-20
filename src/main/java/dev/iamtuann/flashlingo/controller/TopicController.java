@@ -28,9 +28,15 @@ public class TopicController {
         return new ResponseEntity<>(topic, HttpStatus.OK);
     }
 
-    @PutMapping("{id}/change-status")
+    @PutMapping("{id}/status")
     public ResponseEntity<TopicDto> changeStatusTopic(@PathVariable Long id, @RequestParam Integer status, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TopicDto topic = topicService.changeStatus(id, status, userDetails.getId());
         return new ResponseEntity<>(topic, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteTopic(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        topicService.deleteTopic(id, userDetails.getId());
+        return ResponseEntity.ok("Deleted topic successfully");
     }
 }

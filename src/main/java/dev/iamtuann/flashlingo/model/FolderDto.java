@@ -16,6 +16,7 @@ public class FolderDto {
     private Date createdAt;
     private Date updatedAt;
     private String slug;
+    private Integer status;
     private Integer itemsNumber;
     private Set<Long> topicIds;
 }
