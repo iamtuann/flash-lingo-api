@@ -13,6 +13,8 @@ public class TopicRequest {
     private Long id;
     private String name;
     private String description;
+    private String shortPassage;
+    private String conversation;
     private String termLang;
     private String defLang;
 }

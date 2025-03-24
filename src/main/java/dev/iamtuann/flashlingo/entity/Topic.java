@@ -54,6 +54,14 @@ public class Topic implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "topics")
     private Set<Folder> folders;
 
+    @Lob
+    @Column(name = "short_passage")
+    private String shortPassage;
+
+    @Lob
+    @Column(name = "conversation")
+    private String conversation;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = new Date();

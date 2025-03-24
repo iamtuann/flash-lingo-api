@@ -1,6 +1,7 @@
 package dev.iamtuann.flashlingo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,4 +35,21 @@ public class Term {
 
     @Column(name = "modified_at")
     private Date modifiedAt = new Date();
+
+    @Size(max = 255)
+    @Column(name = "pronunciation")
+    private String pronunciation;
+
+    @Lob
+    @Column(name = "example")
+    private String example;
+
+    @Size(max = 45)
+    @Column(name = "level", length = 45)
+    private String level;
+
+    @Size(max = 45)
+    @Column(name = "part_of_speech", length = 45)
+    private String partOfSpeech;
+
 }

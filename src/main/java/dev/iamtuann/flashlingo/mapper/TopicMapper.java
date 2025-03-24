@@ -44,6 +44,12 @@ public interface TopicMapper {
         if ( request.getDescription() != null ) {
             topic.setDescription( request.getDescription() );
         }
+        if ( request.getShortPassage() != null ) {
+            topic.setShortPassage( request.getShortPassage() );
+        }
+        if ( request.getConversation() != null ) {
+            topic.setConversation( request.getConversation() );
+        }
         if ( request.getTermLang() != null ) {
             topic.setTermLang( request.getTermLang() );
         }

@@ -15,6 +15,10 @@ public class TermDto {
     private Long id;
     private String term;
     private String definition;
+    private String pronunciation;
+    private String partOfSpeech;
+    private String example;
+    private String level;
     private String imageUrl;
     private Integer rank;
     private Long topicId;

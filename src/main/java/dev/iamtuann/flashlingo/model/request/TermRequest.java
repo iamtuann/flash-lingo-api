@@ -15,5 +15,9 @@ public class TermRequest {
     private Long topicId;
     private String term;
     private String definition;
+    private String pronunciation;
+    private String partOfSpeech;
+    private String example;
+    private String level;
     private Integer rank;
 }

@@ -25,4 +25,6 @@ public class TopicDto {
     private Integer status;
     private Set<TermDto> terms;
     private Integer termsNumber;
+    private String shortPassage;
+    private String conversation;
 }

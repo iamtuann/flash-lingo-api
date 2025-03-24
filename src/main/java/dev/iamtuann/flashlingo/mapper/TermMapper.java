@@ -25,6 +25,18 @@ public interface TermMapper {
         if ( request.getDefinition() != null ) {
             term.setDefinition(request.getDefinition());
         }
+        if ( request.getPronunciation() != null ) {
+            term.setPronunciation(request.getPronunciation());
+        }
+        if ( request.getLevel() != null ) {
+            term.setLevel(request.getLevel());
+        }
+        if ( request.getExample() != null ) {
+            term.setExample(request.getExample());
+        }
+        if ( request.getPartOfSpeech() != null ) {
+            term.setPartOfSpeech(request.getPartOfSpeech());
+        }
         if ( request.getRank() != null ) {
             term.setRank(request.getRank());
         }
