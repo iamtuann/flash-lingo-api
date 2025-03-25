@@ -21,4 +21,8 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Integer>
             "ORDER BY d.word ASC " +
             "LIMIT 1")
     String getDefinition(String word);
+
+    @Query(value = "SELECT DISTINCT d.pronunciation from Dictionary d " +
+            "WHERE (d.word = :word) ")
+    String getPronunciation(String word);
 }

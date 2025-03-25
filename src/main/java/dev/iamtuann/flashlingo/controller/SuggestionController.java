@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,8 +40,22 @@ public class SuggestionController {
     ) {
         List<String> definitions = suggestionService.getSuggestDefinitions(word, prefix, limit);
         Suggestion<String> suggestion = new Suggestion<>();
-        suggestion.setSuggestions(definitions);
+        suggestion.setWord(word);
         suggestion.setPrefix(prefix);
+        suggestion.setSuggestions(definitions);
+        return ResponseEntity.ok(suggestion);
+    }
+
+    @GetMapping("/pronunciation")
+    public ResponseEntity<Suggestion<String>> getPronunciation(
+            @RequestParam(value = "word") String word,
+            @RequestParam(value = "prefix", defaultValue = "") String prefix
+    ) {
+        String definitions = suggestionService.getPronunciation(word, prefix);
+        Suggestion<String> suggestion = new Suggestion<>();
+        suggestion.setWord(word);
+        suggestion.setPrefix(prefix);
+        suggestion.setSuggestions(Collections.singletonList(definitions));
         return ResponseEntity.ok(suggestion);
     }
 }

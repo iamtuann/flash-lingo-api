@@ -8,4 +8,6 @@ public interface SuggestionService {
     List<WordDto> getSuggestWords(String prefix, Integer limit);
 
     List<String> getSuggestDefinitions(String word, String prefix, Integer limit);
+
+    String getPronunciation(String word, String prefix);
 }

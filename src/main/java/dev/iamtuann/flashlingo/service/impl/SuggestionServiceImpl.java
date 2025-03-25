@@ -19,7 +19,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 
     @Override
     public List<WordDto> getSuggestWords(String prefix, Integer limit) {
-        List<Dictionary> dictionaries = dictionaryRepository.getSuggestWords(prefix, limit);
+        List<Dictionary> dictionaries = dictionaryRepository.getSuggestWords(prefix.toLowerCase(), limit);
         return dictionaries.stream().map(WordDto::new).toList();
     }
 
@@ -28,12 +28,21 @@ public class SuggestionServiceImpl implements SuggestionService {
         if (word == null || word.isEmpty()) {
             return new ArrayList<>();
         } else {
-            String rawDefinition = dictionaryRepository.getDefinition(word);
+            String rawDefinition = dictionaryRepository.getDefinition(word.toLowerCase());
             if (rawDefinition == null || rawDefinition.isEmpty()) {
                 return new ArrayList<>();
             } else {
-                return this.filterDefinitions(rawDefinition, prefix, limit);
+                return this.filterDefinitions(rawDefinition.toLowerCase(), prefix.toLowerCase(), limit);
             }
+        }
+    }
+
+    @Override
+    public String getPronunciation(String word, String prefix) {
+        if (word == null || word.isEmpty()) {
+            return "";
+        } else {
+            return dictionaryRepository.getPronunciation(word.toLowerCase());
         }
     }
 
