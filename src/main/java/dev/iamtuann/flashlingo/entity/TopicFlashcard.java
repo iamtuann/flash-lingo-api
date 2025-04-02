@@ -9,8 +9,8 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "topic_learning")
-public class TopicLearning {
+@Table(name = "topic_flashcard")
+public class TopicFlashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

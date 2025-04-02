@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicLearningDto {
+public class TopicFlashcardDto {
     private Long topicId;
     private List<Long> termLearningIds;
 }

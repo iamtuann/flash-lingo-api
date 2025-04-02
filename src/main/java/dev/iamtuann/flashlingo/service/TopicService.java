@@ -16,5 +16,7 @@ public interface TopicService {
 
     TopicDto changeStatus(Long id, Integer status, Long userId);
 
+    void increaseLearned(Long id);
+
     void deleteTopic(Long id, Long authUserId);
 }

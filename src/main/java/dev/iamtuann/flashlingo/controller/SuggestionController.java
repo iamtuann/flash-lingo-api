@@ -51,11 +51,11 @@ public class SuggestionController {
             @RequestParam(value = "word") String word,
             @RequestParam(value = "prefix", defaultValue = "") String prefix
     ) {
-        String definitions = suggestionService.getPronunciation(word, prefix);
+        String pronunciation = suggestionService.getPronunciation(word, prefix);
         Suggestion<String> suggestion = new Suggestion<>();
         suggestion.setWord(word);
         suggestion.setPrefix(prefix);
-        suggestion.setSuggestions(Collections.singletonList(definitions));
+        suggestion.setSuggestions(pronunciation == null || pronunciation.isEmpty() ? Collections.emptyList() : Collections.singletonList(pronunciation));
         return ResponseEntity.ok(suggestion);
     }
 }

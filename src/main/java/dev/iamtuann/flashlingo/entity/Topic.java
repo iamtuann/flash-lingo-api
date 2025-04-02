@@ -3,6 +3,7 @@ package dev.iamtuann.flashlingo.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -61,6 +62,10 @@ public class Topic implements Serializable {
     @Lob
     @Column(name = "conversation")
     private String conversation;
+
+    @ColumnDefault("0")
+    @Column(name = "learn_count")
+    private Integer learnCount;
 
     @PrePersist
     public void prePersist() {

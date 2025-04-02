@@ -1,6 +1,5 @@
 package dev.iamtuann.flashlingo.service.impl;
 
-import dev.iamtuann.flashlingo.entity.Folder;
 import dev.iamtuann.flashlingo.entity.Topic;
 import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
@@ -130,6 +129,13 @@ public class TopicServiceImpl implements TopicService {
         topic.setStatus(status);
         topic = topicRepository.save(topic);
         return TopicMapper.INSTANCE.toDto(topic);
+    }
+
+    @Override
+    public void increaseLearned(Long id) {
+        Topic topic = topicRepository.findTopicById(id);
+        topic.setLearnCount(topic.getLearnCount() + 1);
+        topicRepository.save(topic);
     }
 
     @Override

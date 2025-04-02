@@ -1,18 +1,21 @@
 package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.enums.EStatus;
+import dev.iamtuann.flashlingo.exception.APIException;
 import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.FolderDto;
 import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.FolderService;
+import dev.iamtuann.flashlingo.service.TopicRecentService;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.service.UserService;
 import dev.iamtuann.flashlingo.utils.PageUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ public class UserController {
     private final UserService userService;
     private final PageUtil pageUtil;
     private final TopicService topicService;
+    private final TopicRecentService topicRecentService;
     private final FolderService folderService;
 
     @GetMapping("")
@@ -57,6 +61,23 @@ public class UserController {
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
         PageDto<TopicDto> topics = topicService.searchTopics(name, null, userDetails.getId(), userDetails.getId(), pageable);
+        return ResponseEntity.ok(topics);
+    }
+
+    @GetMapping("/recent-topics")
+    public ResponseEntity<PageDto<TopicDto>> searchAuthUserRecentTopics(
+            @RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
+            @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+            @RequestParam(value = "key", required = false) String key,
+            @RequestParam(value = "orderBy", required = false) String orderBy,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
+        if (userDetails.getId() == null) {
+            throw new APIException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        PageDto<TopicDto> topics = topicRecentService.searchRecentTopics(name, userDetails.getId(), pageable);
         return ResponseEntity.ok(topics);
     }
 

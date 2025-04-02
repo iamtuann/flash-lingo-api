@@ -1,8 +1,10 @@
 package dev.iamtuann.flashlingo.controller;
 
-import dev.iamtuann.flashlingo.model.TopicLearningDto;
+import dev.iamtuann.flashlingo.model.TopicFlashcardDto;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
-import dev.iamtuann.flashlingo.service.TopicLearningService;
+import dev.iamtuann.flashlingo.service.TopicFlashcardService;
+import dev.iamtuann.flashlingo.service.TopicRecentService;
+import dev.iamtuann.flashlingo.service.TopicService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,23 +14,27 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RequestMapping("api/learning")
 public class TopicLearningController {
-    private final TopicLearningService topicLearningService;
+    private final TopicFlashcardService topicFlashcardService;
+    private final TopicRecentService topicRecentService;
+    private final TopicService topicService;
 
-    @GetMapping("")
-    public ResponseEntity<TopicLearningDto> getTopicLearning(
+    @GetMapping("/flashcard")
+    public ResponseEntity<TopicFlashcardDto> getTopicFlashcard(
             @RequestParam Long topicId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
             ) {
-        TopicLearningDto dto = topicLearningService.findByUserIdAndTopicId(userDetails.getId(), topicId);
+        TopicFlashcardDto dto = topicFlashcardService.findByUserIdAndTopicId(userDetails.getId(), topicId);
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> updateTopicLearning(
-            @RequestBody TopicLearningDto request,
+    @PostMapping("flashcard")
+    public ResponseEntity<?> updateTopicFlashcard(
+            @RequestBody TopicFlashcardDto request,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        topicLearningService.save(userDetails.getId(), request);
+        topicFlashcardService.save(userDetails.getId(), request);
+        topicRecentService.saveRecentTopic(request.getTopicId(), userDetails.getId());
+        topicService.increaseLearned(request.getTopicId());
         return ResponseEntity.ok("");
     }
 }

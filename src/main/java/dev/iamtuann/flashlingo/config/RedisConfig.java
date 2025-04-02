@@ -44,6 +44,15 @@ public class RedisConfig {
         return template;
     }
 
+//    @Bean
+//    public RedisTemplate<String, byte[]> redisTemplate(LettuceConnectionFactory connectionFactory) {
+//        RedisTemplate<String, byte[]> template = new RedisTemplate<>();
+//        template.setConnectionFactory(connectionFactory);
+//        template.setKeySerializer(new StringRedisSerializer());
+//        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+//        return template;
+//    }
+
     @Bean
     public RedisCacheManager cacheManager() {
         RedisCacheConfiguration cacheConfig = myDefaultCacheConfig(Duration.ofMinutes(10)).disableCachingNullValues();
@@ -51,6 +60,7 @@ public class RedisConfig {
         return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(cacheConfig)
                 .withCacheConfiguration("topics", myDefaultCacheConfig(Duration.ofMinutes(5)))
+                .withCacheConfiguration("tts", myDefaultCacheConfig(Duration.ofDays(1)))
                 .build();
     }
 
