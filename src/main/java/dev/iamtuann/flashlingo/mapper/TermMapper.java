@@ -20,19 +20,19 @@ public interface TermMapper {
             return;
         }
         if ( request.getTerm() != null ) {
-            term.setTerm(request.getTerm());
+            term.setTerm(request.getTerm().trim());
         }
         if ( request.getDefinition() != null ) {
-            term.setDefinition(request.getDefinition());
+            term.setDefinition(request.getDefinition().trim());
         }
         if ( request.getPronunciation() != null ) {
-            term.setPronunciation(request.getPronunciation());
+            term.setPronunciation(request.getPronunciation().trim());
         }
         if ( request.getLevel() != null ) {
             term.setLevel(request.getLevel());
         }
         if ( request.getExample() != null ) {
-            term.setExample(request.getExample());
+            term.setExample(request.getExample().trim());
         }
         if ( request.getPartOfSpeech() != null ) {
             term.setPartOfSpeech(request.getPartOfSpeech());

@@ -2,13 +2,11 @@ package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.model.Suggestion;
 import dev.iamtuann.flashlingo.model.WordDto;
+import dev.iamtuann.flashlingo.service.GeminiService;
 import dev.iamtuann.flashlingo.service.SuggestionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +17,7 @@ import java.util.List;
 public class SuggestionController {
 
     private final SuggestionService suggestionService;
+    private final GeminiService geminiService;
 
     @GetMapping("/word")
     public ResponseEntity<Suggestion<WordDto>> getSuggestWords(
@@ -57,5 +56,13 @@ public class SuggestionController {
         suggestion.setPrefix(prefix);
         suggestion.setSuggestions(pronunciation == null || pronunciation.isEmpty() ? Collections.emptyList() : Collections.singletonList(pronunciation));
         return ResponseEntity.ok(suggestion);
+    }
+
+    @PostMapping("/examples/generate")
+    public ResponseEntity<List<String>> generateExamples(
+            @RequestParam String term, @RequestParam String definition
+    ) {
+        List<String> examples = geminiService.generateExamples(term, definition);
+        return ResponseEntity.ok(examples);
     }
 }
