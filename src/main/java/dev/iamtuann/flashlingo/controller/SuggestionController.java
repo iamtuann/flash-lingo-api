@@ -1,5 +1,7 @@
 package dev.iamtuann.flashlingo.controller;
 
+import dev.iamtuann.flashlingo.model.PageDto;
+import dev.iamtuann.flashlingo.model.PexelsPhotoDto;
 import dev.iamtuann.flashlingo.model.Suggestion;
 import dev.iamtuann.flashlingo.model.WordDto;
 import dev.iamtuann.flashlingo.service.GeminiService;
@@ -64,5 +66,13 @@ public class SuggestionController {
     ) {
         List<String> examples = geminiService.generateExamples(term, definition);
         return ResponseEntity.ok(examples);
+    }
+
+    @GetMapping("/search-photos")
+    public PageDto<PexelsPhotoDto> searchPhotos(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "12") Integer perPage) {
+        return suggestionService.searchPhotos(query, page, perPage);
     }
 }

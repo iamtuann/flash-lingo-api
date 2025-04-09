@@ -20,4 +20,5 @@ public class TermRequest {
     private String example;
     private String level;
     private Integer rank;
+    private String imageUrl;
 }

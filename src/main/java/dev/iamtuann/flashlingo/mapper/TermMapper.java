@@ -37,6 +37,9 @@ public interface TermMapper {
         if ( request.getPartOfSpeech() != null ) {
             term.setPartOfSpeech(request.getPartOfSpeech());
         }
+        if ( request.getImageUrl() != null ) {
+            term.setImageUrl(request.getImageUrl());
+        }
         if ( request.getRank() != null ) {
             term.setRank(request.getRank());
         }
