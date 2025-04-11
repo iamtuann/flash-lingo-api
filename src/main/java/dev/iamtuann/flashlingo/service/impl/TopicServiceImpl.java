@@ -1,5 +1,6 @@
 package dev.iamtuann.flashlingo.service.impl;
 
+import dev.iamtuann.flashlingo.entity.Folder;
 import dev.iamtuann.flashlingo.entity.Topic;
 import dev.iamtuann.flashlingo.enums.EStatus;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
@@ -23,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +58,7 @@ public class TopicServiceImpl implements TopicService {
         if (authId != null && authId.equals(userId)) {
             topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
         } else {
-            topicPage = topicRepository.searchTopics(name, folderId, userId, EStatus.PUBLIC.getValue(), pageable);
+            topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
         }
         List<TopicDto> topics =topicPage.stream()
                 .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
@@ -146,5 +145,21 @@ public class TopicServiceImpl implements TopicService {
             throw new NoPermissionException("delete this topic");
         }
         topicRepository.deleteById(id);
+    }
+
+    @Override
+    public void addTopicToFolders(Long topicId, List<Long> folderIds, long userId) {
+        if(!checkPermission.viewableTopic(topicId, userId)) {
+            throw new NoPermissionException("access this topic");
+        }
+        Topic topic = topicRepository.findTopicById(topicId);
+        for (Long folderId : folderIds) {
+            if(checkPermission.editableFolder(folderId, userId)) {
+                Folder folder = folderRepository.findFolderById(folderId);
+                folder.getTopics().add(topic);
+                folder.setUpdatedAt(new Date());
+                folderRepository.save(folder);
+            }
+        }
     }
 }

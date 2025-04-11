@@ -5,6 +5,8 @@ import dev.iamtuann.flashlingo.model.TopicDto;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface TopicService {
     TopicDto findTopicById(Long id, Long authUserId);
 
@@ -19,4 +21,6 @@ public interface TopicService {
     void increaseLearned(Long id);
 
     void deleteTopic(Long id, Long authUserId);
+
+    void addTopicToFolders(Long topicId, List<Long> folderIds, long userId);
 }

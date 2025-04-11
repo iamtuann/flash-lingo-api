@@ -1,6 +1,7 @@
 package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.model.TermDto;
+import dev.iamtuann.flashlingo.model.request.ListTermRequest;
 import dev.iamtuann.flashlingo.model.request.TermRequest;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.TermService;
@@ -29,6 +30,12 @@ public class TermController {
     public ResponseEntity<TermDto> saveTerm(@Valid @RequestBody TermRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TermDto termDto = termService.save(request, userDetails != null ? userDetails.getId() : null);
         return ResponseEntity.ok(termDto);
+    }
+
+    @PostMapping("list")
+    public ResponseEntity<List<TermDto>> saveListTerm(@Valid @RequestBody ListTermRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<TermDto> response = termService.saveList(request, userDetails != null ? userDetails.getId() : null);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("")

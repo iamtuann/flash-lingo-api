@@ -7,6 +7,7 @@ import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.TermMapper;
 import dev.iamtuann.flashlingo.model.TermDto;
+import dev.iamtuann.flashlingo.model.request.ListTermRequest;
 import dev.iamtuann.flashlingo.model.request.TermRequest;
 import dev.iamtuann.flashlingo.repository.TermRepository;
 import dev.iamtuann.flashlingo.repository.TopicRepository;
@@ -17,6 +18,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,16 @@ public class TermServiceImpl implements TermService {
         }
         Term newTerm = termRepository.save(term);
         return termMapper.toDto(newTerm);
+    }
+
+    @Transactional
+    @Override
+    public List<TermDto> saveList(ListTermRequest request, Long userId) {
+        List<TermDto> terms = new ArrayList<>();
+        for (TermRequest term : request.getTerms()) {
+            terms.add(save(term, userId));
+        }
+        return terms;
     }
 
     @Override
@@ -84,15 +96,17 @@ public class TermServiceImpl implements TermService {
     public Term createTerm(TermRequest request) {
         Term term = new Term();
         Topic topic = topicRepository.findTopicById(request.getTopicId());
+        Integer rank = request.getRank();
         if (request.getRank() == null) {
             throw new BadRequestException("rank", null, "New term must have ranking");
-        } else if (request.getRank() > topic.getTerms().size()) {
-            throw new BadRequestException("rank", request.getRank(), "Rank cannot be larger size");
-        } else {
-            termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, request.getRank());
-            term.setTopic(topic);
-            termMapper.updateTermFormRequest(request, term);
         }
+        if (rank > topic.getTerms().size()) {
+            rank = topic.getTerms().size();
+//            throw new BadRequestException("rank", request.getRank(), "Rank cannot be larger size");
+        }
+        termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, rank);
+        term.setTopic(topic);
+        termMapper.updateTermFormRequest(request, term);
         return term;
     }
 }

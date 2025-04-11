@@ -71,6 +71,7 @@ public class Topic implements Serializable {
     public void prePersist() {
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.learnCount = 0;
     }
 
     @PreUpdate

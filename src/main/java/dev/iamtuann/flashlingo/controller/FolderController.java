@@ -66,9 +66,21 @@ public class FolderController {
         return ResponseEntity.ok(topics);
     }
 
-    @PostMapping("/topics")
-    public ResponseEntity<FolderDto> addTopicToFolder(@RequestBody AddTopicRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        FolderDto folderDto = folderService.addTopicsToFolder(request, userDetails.getId());
+    @PostMapping("{id}/topics")
+    public ResponseEntity<FolderDto> addTopicsToFolder(
+            @PathVariable Long id,
+            @RequestBody AddTopicRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        FolderDto folderDto = folderService.addTopicsToFolder(id, request.getTopicIds(), userDetails.getId());
         return ResponseEntity.ok(folderDto);
+    }
+
+    @DeleteMapping("{id}/topics/{topicId}")
+    public ResponseEntity<?> removeFolder(
+            @PathVariable Long id,
+            @PathVariable Long topicId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        FolderDto dto = folderService.removeTopicFromFolder(id, topicId, userDetails.getId());
+        return ResponseEntity.ok(dto);
     }
 }

@@ -74,7 +74,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        if (userDetails.getId() == null) {
+        if (userDetails == null) {
             throw new APIException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         PageDto<TopicDto> topics = topicRecentService.searchRecentTopics(name, userDetails.getId(), pageable);

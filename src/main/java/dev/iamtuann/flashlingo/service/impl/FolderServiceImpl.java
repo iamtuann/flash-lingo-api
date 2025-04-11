@@ -85,18 +85,30 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @CacheEvict(value = "topics", allEntries = true)
-    public FolderDto addTopicsToFolder(AddTopicRequest request, long userId) {
-        if (!checkPermission.editableFolder(request.getFolderId(), userId)) {
+    public FolderDto addTopicsToFolder(Long folderId, List<Long> topicIds, long userId) {
+        if (!checkPermission.editableFolder(folderId, userId)) {
             throw new NoPermissionException("edit this folder");
         }
-        Folder folder = folderRepository.findFolderById(request.getFolderId());
-        for(Long id : request.getTopicIds()) {
+        Folder folder = folderRepository.findFolderById(folderId);
+        for(Long id : topicIds) {
             if(checkPermission.viewableTopic(id, userId)) {
                 folder.getTopics().add(topicRepository.findTopicById(id));
             } else {
                 throw new NoPermissionException("access this topic");
             }
         }
+        folder.setUpdatedAt(new Date());
+        folderRepository.save(folder);
+        return folderMapper.toDto(folder);
+    }
+
+    @Override
+    public FolderDto removeTopicFromFolder(Long folderId, Long topicId, long userId) {
+        if (!checkPermission.editableFolder(folderId, userId)) {
+            throw new NoPermissionException("edit this folder");
+        }
+        Folder folder = folderRepository.findFolderById(folderId);
+        folder.getTopics().remove(topicRepository.findTopicById(topicId));
         folder.setUpdatedAt(new Date());
         folderRepository.save(folder);
         return folderMapper.toDto(folder);

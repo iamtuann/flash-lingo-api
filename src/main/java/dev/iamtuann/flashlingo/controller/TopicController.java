@@ -2,6 +2,7 @@ package dev.iamtuann.flashlingo.controller;
 
 import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.model.TopicDto;
+import dev.iamtuann.flashlingo.model.request.ListFolderIds;
 import dev.iamtuann.flashlingo.model.request.TopicRequest;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.TopicService;
@@ -51,6 +52,14 @@ public class TopicController {
     public ResponseEntity<TopicDto> saveTopic(@RequestBody TopicRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         TopicDto topic = topicService.save(request, userDetails.getId());
         return new ResponseEntity<>(topic, HttpStatus.OK);
+    }
+
+    @PostMapping("{id}/folders")
+    public ResponseEntity<?> addTopicToFolders(
+            @PathVariable Long id,
+            @RequestBody ListFolderIds request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        topicService.addTopicToFolders(id, request.getFolderIds(), userDetails.getId());
+        return ResponseEntity.ok("Add topic to folders successfully");
     }
 
     @PutMapping("{id}/status")

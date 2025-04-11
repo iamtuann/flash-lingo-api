@@ -9,9 +9,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddTopicRequest {
-    private List<Long> topicIds;
+@NoArgsConstructor
+public class ListTermRequest {
+    List<TermRequest> terms;
 }
-

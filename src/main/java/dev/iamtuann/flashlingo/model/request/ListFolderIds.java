@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddTopicRequest {
-    private List<Long> topicIds;
+public class ListFolderIds {
+    List<Long> folderIds;
 }
-

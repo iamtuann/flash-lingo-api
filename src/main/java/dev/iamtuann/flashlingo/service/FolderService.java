@@ -6,6 +6,8 @@ import dev.iamtuann.flashlingo.model.request.AddTopicRequest;
 import dev.iamtuann.flashlingo.model.request.FolderRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 
 public interface FolderService {
 
@@ -19,5 +21,7 @@ public interface FolderService {
 
     void delete(long id, long userId);
 
-    FolderDto addTopicsToFolder(AddTopicRequest request, long userId);
+    FolderDto addTopicsToFolder(Long folderId, List<Long> topicIds, long userId);
+
+    FolderDto removeTopicFromFolder(Long folderId, Long topicId, long userId);
 }
