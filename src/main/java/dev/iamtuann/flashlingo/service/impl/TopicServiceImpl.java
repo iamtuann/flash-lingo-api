@@ -49,35 +49,37 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Cacheable(value = "topics")
-    public PageDto<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable) {
-//        Integer status = EStatus.PUBLIC.getValue();
-        if (folderId != null && !checkPermission.viewableFolder(folderId, authId)) {
-            throw new NoPermissionException("access this folder");
-        }
-        Page<Topic> topicPage;
-        if (authId != null && authId.equals(userId)) {
-            topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
-        } else {
-            topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
-        }
+    public PageDto<TopicDto> searchTopics(String name, Long authId, Pageable pageable) {
+        Page<Topic> topicPage = topicRepository.searchTopics(name, authId, pageable);
         List<TopicDto> topics =topicPage.stream()
                 .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
         return new PageDto<>(topics, topicPage);
     }
 
     @Override
+    @Cacheable(value = "topics-folder")
     public PageDto<TopicDto> searchTopicsInFolder(String name, long folderId, Long authId, Pageable pageable) {
         if (!checkPermission.viewableFolder(folderId, authId)) {
             throw new NoPermissionException("access this folder");
         }
-//        Folder folder = folderRepository
-//        if (authId != null && authId.equals(userId)) {
-//            topicPage = topicRepository.searchTopics(name, folderId, userId, null, pageable);
-//        } else {
-//            topicPage = topicRepository.searchTopics(name, folderId, userId, EStatus.PUBLIC.getValue(), pageable);
-//        }
-//        Page<Topic> topicPage;
-        return null;
+        Page<Topic> topicPage = topicRepository.searchTopicsInFolder(name, folderId, pageable);
+        List<TopicDto> topics =topicPage.stream()
+                .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
+        return new PageDto<>(topics, topicPage);
+    }
+
+    @Override
+    @Cacheable(value = "topics-user")
+    public PageDto<TopicDto> searchTopicsUser(String name, Long userId, Long authId, Pageable pageable) {
+        Page<Topic> topicPage;
+        if (authId != null && authId.equals(userId)) {
+            topicPage = topicRepository.searchTopicsUser(name, userId, null, pageable);
+        } else {
+            topicPage = topicRepository.searchTopicsUser(name, userId, EStatus.PUBLIC.getValue(), pageable);
+        }
+        List<TopicDto> topics =topicPage.stream()
+                .map(topicMapper::toDtoWithoutTerms).collect(Collectors.toList());
+        return new PageDto<>(topics, topicPage);
     }
 
 

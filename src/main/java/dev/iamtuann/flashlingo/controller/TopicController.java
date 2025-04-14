@@ -31,14 +31,14 @@ public class TopicController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        PageDto<TopicDto> topics = topicService.searchTopics(name, null, null, userDetails.getId(), pageable);
+        PageDto<TopicDto> topics = topicService.searchTopics(name, userDetails == null ? null : userDetails.getId(), pageable);
         return ResponseEntity.ok(topics);
     }
 
     @GetMapping("list/popular")
     public ResponseEntity<PageDto<TopicDto>> getPopularTopics() {
         Pageable pageable = pageUtil.getPageable(1, 10, "learnCount", "desc");
-        PageDto<TopicDto> topics = topicService.searchTopics("", null, null, null, pageable);
+        PageDto<TopicDto> topics = topicService.searchTopics("", null, pageable);
         return ResponseEntity.ok(topics);
     }
 

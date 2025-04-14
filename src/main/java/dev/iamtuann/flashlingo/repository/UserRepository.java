@@ -12,12 +12,18 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<AuthUser, Long> {
 
     @Query(value = "SELECT a FROM AuthUser a " +
-            "WHERE (:search IS NULL OR :name = '' OR a.firstName LIKE CONCAT('%', :search, '%') " +
-            "OR a.lastName LIKE CONCAT('%', :search, '%') " +
-            "OR a.email LIKE CONCAT('%', :search, '%') " +
-            "OR CONCAT(a.firstName, a.lastName) LIKE CONCAT('%', :search, '%')) " +
-            "AND (:status IS NULL OR a.status = :status)" )
+            "WHERE (:search IS NULL OR :search = '' " +
+            "OR LOWER(a.firstName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(a.lastName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(a.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "AND (:status IS NULL OR a.status = :status))" )
     Page<AuthUser> searchUsers(@Param("search") String search,
                              @Param("status") Integer status,
                              Pageable pageable);
+
+    @Query("SELECT au FROM AuthUser au LEFT JOIN au.topics t " +
+            "WHERE t.status = 1 " +
+            "GROUP BY au.id " +
+            "ORDER BY COUNT(t) DESC")
+    Page<AuthUser> getTopCreators(Pageable pageable);
 }

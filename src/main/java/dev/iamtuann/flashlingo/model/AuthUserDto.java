@@ -16,4 +16,5 @@ public class AuthUserDto {
     private Date createdAt;
     private Date updatedAt;
     private Integer status;
+    private Integer topicsNumber;
 }

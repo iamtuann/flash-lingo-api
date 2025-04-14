@@ -4,11 +4,11 @@ import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.AuthUserMapper;
 import dev.iamtuann.flashlingo.model.AuthUserDto;
+import dev.iamtuann.flashlingo.model.PageDto;
 import dev.iamtuann.flashlingo.repository.UserRepository;
 import dev.iamtuann.flashlingo.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +28,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<AuthUserDto> searchUsers(String search, Integer status, Pageable pageable) {
+    public PageDto<AuthUserDto> searchUsers(String search, Integer status, Pageable pageable) {
         Page<AuthUser> authUserPage = userRepository.searchUsers(search, status, pageable);
         List<AuthUserDto> users = authUserPage.stream()
                 .map(authUserMapper::toDto).toList();
-        return new PageImpl<>(users, pageable, authUserPage.getTotalElements());
+        return new PageDto<>(users, authUserPage);
+    }
+
+    @Override
+    public PageDto<AuthUserDto> getTopCreators(Pageable pageable) {
+        Page<AuthUser> authUserPage = userRepository.getTopCreators(pageable);
+        List<AuthUserDto> users = authUserPage.stream()
+                .map(authUserMapper::toDto).toList();
+        return new PageDto<>(users, authUserPage);
     }
 }

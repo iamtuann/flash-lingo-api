@@ -13,7 +13,6 @@ import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.service.UserService;
 import dev.iamtuann.flashlingo.utils.PageUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +30,8 @@ public class UserController {
     private final FolderService folderService;
 
     @GetMapping("")
-    public ResponseEntity<Page<AuthUserDto>> searchUsers(
-            @RequestParam(value = "search", defaultValue = "") String search,
+    public ResponseEntity<PageDto<AuthUserDto>> searchUsers(
+            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
             @RequestParam(value = "key", required = false) String key,
@@ -40,7 +39,18 @@ public class UserController {
             ) {
         Integer status = EStatus.PUBLIC.getValue();
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        Page<AuthUserDto> users = userService.searchUsers(search, status, pageable);
+        PageDto<AuthUserDto> users = userService.searchUsers(name, status, pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("list/top-creators")
+    public ResponseEntity<PageDto<AuthUserDto>> getTopCreators(
+            @RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
+            @RequestParam(value = "pageSize", defaultValue = "20") int pageSize
+    ) {
+        Integer status = EStatus.PUBLIC.getValue();
+        Pageable pageable = pageUtil.getPageable(pageIndex, pageSize);
+        PageDto<AuthUserDto> users = userService.getTopCreators(pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -60,7 +70,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        PageDto<TopicDto> topics = topicService.searchTopics(name, null, userDetails.getId(), userDetails.getId(), pageable);
+        PageDto<TopicDto> topics = topicService.searchTopicsUser(name, userDetails.getId(), userDetails.getId(), pageable);
         return ResponseEntity.ok(topics);
     }
 
@@ -107,7 +117,7 @@ public class UserController {
     ) {
         Long authId = userDetails != null ? userDetails.getId() : null;
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        PageDto<TopicDto> topics = topicService.searchTopics(name, null, userId, authId, pageable);
+        PageDto<TopicDto> topics = topicService.searchTopicsUser(name, userId, authId, pageable);
         return ResponseEntity.ok(topics);
     }
 

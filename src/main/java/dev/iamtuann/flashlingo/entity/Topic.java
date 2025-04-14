@@ -22,7 +22,7 @@ public class Topic implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Lob
+//    @Lob
     @Column(name = "description")
     private String description;
 

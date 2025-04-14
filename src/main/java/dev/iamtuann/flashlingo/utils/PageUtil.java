@@ -17,6 +17,14 @@ public class PageUtil {
         }
 
     }
+
+    public Pageable getPageable(int pageIndex, int pageSize) {
+        if (pageSize != -1) {
+            return PageRequest.of(pageIndex - 1, pageSize);
+        } else {
+            return PageRequest.of(0, Integer.MAX_VALUE);
+        }
+    }
     private Sort getSort(String key, String orderBy) {
         if (key != null && !key.isEmpty()) {
             return "asc".equalsIgnoreCase(orderBy)

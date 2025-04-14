@@ -62,7 +62,7 @@ public class FolderController {
 
         Long authId = userDetails != null ? userDetails.getId() : null;
         Pageable pageable = pageUtil.getPageable(pageIndex, pageSize, key, orderBy);
-        PageDto<TopicDto> topics = topicService.searchTopics(name, folderId, null, authId, pageable);
+        PageDto<TopicDto> topics = topicService.searchTopicsInFolder(name, folderId, authId, pageable);
         return ResponseEntity.ok(topics);
     }
 

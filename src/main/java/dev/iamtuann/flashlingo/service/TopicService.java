@@ -10,9 +10,11 @@ import java.util.List;
 public interface TopicService {
     TopicDto findTopicById(Long id, Long authUserId);
 
-    PageDto<TopicDto> searchTopics(String name, Long folderId, Long userId, Long authId, Pageable pageable);
+    PageDto<TopicDto> searchTopics(String name, Long authId, Pageable pageable);
 
     PageDto<TopicDto> searchTopicsInFolder(String name, long folderId, Long authId, Pageable pageable);
+
+    PageDto<TopicDto> searchTopicsUser(String name, Long userId, Long authId, Pageable pageable);
 
     TopicDto save(TopicRequest request, Long userId);
 
