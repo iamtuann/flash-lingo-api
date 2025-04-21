@@ -25,15 +25,15 @@ public class JwtTokenProvider {
     private long jwtExpire;
 
     public String generateToken(Authentication authentication){
-
-        String username = authentication.getName();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String email = userDetails.getEmail();
 
         Date currentDate = new Date();
 
         Date expireDate = new Date(currentDate.getTime() + jwtExpire);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
                 .expiration(expireDate)
                 .signWith(key())
@@ -42,14 +42,14 @@ public class JwtTokenProvider {
 
     public String generateToken(AuthUser authUser){
 
-        String username = authUser.getEmail();
+        String email = authUser.getEmail();
 
         Date currentDate = new Date();
 
         Date expireDate = new Date(currentDate.getTime() + jwtExpire);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
                 .expiration(expireDate)
                 .signWith(key())

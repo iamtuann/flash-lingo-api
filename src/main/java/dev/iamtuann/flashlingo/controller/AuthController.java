@@ -3,8 +3,10 @@ package dev.iamtuann.flashlingo.controller;
 import dev.iamtuann.flashlingo.entity.AuthUser;
 import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.AuthUserResponse;
+import dev.iamtuann.flashlingo.model.request.ChangePasswordRequest;
 import dev.iamtuann.flashlingo.model.request.LoginDto;
 import dev.iamtuann.flashlingo.model.request.RegisterDto;
+import dev.iamtuann.flashlingo.model.request.UserRequest;
 import dev.iamtuann.flashlingo.security.UserDetailsImpl;
 import dev.iamtuann.flashlingo.service.AuthUserService;
 import jakarta.validation.Valid;
@@ -36,5 +38,23 @@ public class AuthController {
     public ResponseEntity<AuthUserDto> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         AuthUserDto userDto = authUserService.getUserById(userDetails.getId());
         return ResponseEntity.ok(userDto);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<AuthUserDto> updateProfile(
+            @RequestBody @Valid UserRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        AuthUserDto userDto = authUserService.updateUserById(request, userDetails.getId());
+        return ResponseEntity.ok(userDto);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody @Valid ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        authUserService.changePassword(userDetails.getId(), request.getCurrentPassword(), request.getNewPassword());
+        return ResponseEntity.ok("Change password successfully!");
     }
 }

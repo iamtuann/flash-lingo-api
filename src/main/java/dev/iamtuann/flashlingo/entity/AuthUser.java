@@ -1,10 +1,12 @@
 package dev.iamtuann.flashlingo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,4 +70,16 @@ public class AuthUser {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @Size(max = 255)
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "dob")
+    private LocalDate dob;
+
+    @Size(max = 255)
+    @Column(name = "bio")
+    private String bio;
+
 }

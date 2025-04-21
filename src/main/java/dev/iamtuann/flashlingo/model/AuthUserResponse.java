@@ -18,10 +18,12 @@ public class AuthUserResponse {
     private String lastName;
     private String avatarUrl;
     private String token;
+    private String username;
 
     public AuthUserResponse(UserDetailsImpl userDetails, String token) {
         this.id = userDetails.getId();
-        this.email = userDetails.getUsername();
+        this.username = userDetails.getUsername();
+        this.email = userDetails.getEmail();
         this.firstName = userDetails.getFirstName();
         this.lastName = userDetails.getLastName();
         this.avatarUrl = userDetails.getAvatarUrl();
@@ -31,6 +33,7 @@ public class AuthUserResponse {
     public AuthUserResponse(AuthUser user, String token) {
         this.id = user.getId();
         this.email = user.getEmail();
+        this.username = user.getUsername();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.avatarUrl = user.getAvatarUrl();

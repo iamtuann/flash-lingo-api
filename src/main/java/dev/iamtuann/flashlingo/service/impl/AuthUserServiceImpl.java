@@ -9,6 +9,7 @@ import dev.iamtuann.flashlingo.model.AuthUserDto;
 import dev.iamtuann.flashlingo.model.AuthUserResponse;
 import dev.iamtuann.flashlingo.model.request.LoginDto;
 import dev.iamtuann.flashlingo.model.request.RegisterDto;
+import dev.iamtuann.flashlingo.model.request.UserRequest;
 import dev.iamtuann.flashlingo.repository.AuthUserRepository;
 import dev.iamtuann.flashlingo.repository.RoleRepository;
 import dev.iamtuann.flashlingo.security.JwtTokenProvider;
@@ -24,8 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -37,6 +37,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final AuthUserMapper authUserMapper = AuthUserMapper.INSTANCE;
+    private final Random random = new Random();
 
     @Override
     public AuthUserResponse login(LoginDto loginDto) {
@@ -62,6 +63,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
         AuthUser user = new AuthUser();
         user.setEmail(registerDto.getEmail());
+        user.setUsername(generateUsername());
         user.setFirstName(registerDto.getFirstName());
         user.setLastName(registerDto.getLastName());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
@@ -76,5 +78,42 @@ public class AuthUserServiceImpl implements AuthUserService {
     public AuthUserDto getUserById(Long id) {
         AuthUser authUser = authUserRepository.findAuthUserById(id);
         return authUserMapper.toDto(authUser);
+    }
+
+    @Override
+    public AuthUserDto updateUserById(UserRequest request, Long userId) {
+        AuthUser authUser = authUserRepository.findAuthUserById(userId);
+        if (!Objects.equals(authUser.getUsername(), request.getUsername()) &&  authUserRepository.existsByUsername(request.getUsername())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Username is already taken!");
+        }
+
+        authUser.setUsername(request.getUsername());
+        authUser.setFirstName(request.getFirstName());
+        authUser.setLastName(request.getLastName());
+        authUser.setDob(request.getDob());
+        authUser.setBio(request.getBio());
+        authUser.setUpdatedAt(new Date());
+        authUserRepository.save(authUser);
+        return authUserMapper.toDto(authUser);
+    }
+
+    @Override
+    public void changePassword(Long userId, String currentPassword, String newPassword) {
+        AuthUser authUser = authUserRepository.findAuthUserById(userId);
+        boolean isMatches = passwordEncoder.matches(currentPassword, authUser.getPassword());
+        if (isMatches) {
+            authUser.setPassword(passwordEncoder.encode(newPassword));
+            authUserRepository.save(authUser);
+        } else {
+            throw new APIException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
+    }
+
+    public String generateUsername() {
+        String username;
+        do {
+            username = "User" + String.format("%08d", random.nextInt(100_000_000));
+        } while (authUserRepository.existsByUsername(username));
+        return username;
     }
 }

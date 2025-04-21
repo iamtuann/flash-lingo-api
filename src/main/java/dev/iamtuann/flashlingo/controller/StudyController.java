@@ -20,11 +20,12 @@ public class StudyController {
 
     @GetMapping("daily-time")
     public ResponseEntity<?> getDailyStudyTime(
+            @RequestParam(required = false) Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<StudyStatDto> stats = studyService.getStudyDailyTime(userDetails.getId(), start, end);
+        List<StudyStatDto> stats = studyService.getStudyDailyTime(userId != null ? userId : userDetails.getId(), start, end);
         return ResponseEntity.ok(stats);
     }
 

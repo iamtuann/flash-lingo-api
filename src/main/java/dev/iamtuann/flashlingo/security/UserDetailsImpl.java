@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 public class UserDetailsImpl implements UserDetails {
     private Long id;
     private String username;
+    private String email;
     private String firstName;
     private String lastName;
     private String password;
@@ -33,6 +33,7 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toSet());
         return new UserDetailsImpl(
                 user.getId(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),

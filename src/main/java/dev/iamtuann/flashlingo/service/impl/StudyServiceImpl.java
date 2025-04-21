@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,14 +43,24 @@ public class StudyServiceImpl implements StudyService {
         LocalDateTime midnight = today.atStartOfDay();
         long secondsSinceMidnight = Duration.between(midnight, now).getSeconds();
 
-        StudyStat todayStat = studyStatRepository.findByAuthUserIdAndStatDate(userId, today)
-                .orElseGet(() -> {
-                    StudyStat newStat = new StudyStat();
-                    newStat.setAuthUser(user);
-                    newStat.setStatDate(today);
-                    newStat.setTotalDurationSeconds(0L);
-                    return newStat;
-                });
+        StudyStat todayStat;
+//                = studyStatRepository.findByAuthUserIdAndStatDate(userId, today)
+//                .orElseGet(() -> {
+//                    StudyStat newStat = new StudyStat();
+//                    newStat.setAuthUser(user);
+//                    newStat.setStatDate(today);
+//                    newStat.setTotalDurationSeconds(0L);
+//                    return newStat;
+//                });
+        Optional<StudyStat> optional = studyStatRepository.findByAuthUserIdAndStatDate(userId, today);
+        if (optional.isPresent()) {
+            todayStat = optional.get();
+        } else {
+            todayStat = new StudyStat();
+            todayStat.setAuthUser(user);
+            todayStat.setStatDate(today);
+            todayStat.setTotalDurationSeconds(0L);
+        }
 
         LocalDate yesterday = today.minusDays(1);
 

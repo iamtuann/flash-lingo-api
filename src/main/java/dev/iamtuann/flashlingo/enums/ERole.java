@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ERole {
     ADMIN(1, "ADMIN"),
-    STAFF(2, "STAFF"),
-    USER(3, "USER");
+    TEACHER(3, "TEACHER"),
+    USER(2, "USER");
 
     private final long id;
     private final String name;
