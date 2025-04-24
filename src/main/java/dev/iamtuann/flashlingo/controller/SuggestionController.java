@@ -1,11 +1,10 @@
 package dev.iamtuann.flashlingo.controller;
 
-import dev.iamtuann.flashlingo.model.PageDto;
-import dev.iamtuann.flashlingo.model.PexelsPhotoDto;
-import dev.iamtuann.flashlingo.model.Suggestion;
-import dev.iamtuann.flashlingo.model.WordDto;
+import dev.iamtuann.flashlingo.model.*;
+import dev.iamtuann.flashlingo.model.request.GenerateTopicRequest;
 import dev.iamtuann.flashlingo.service.GeminiService;
 import dev.iamtuann.flashlingo.service.SuggestionService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,5 +73,13 @@ public class SuggestionController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "12") Integer perPage) {
         return suggestionService.searchPhotos(query, page, perPage);
+    }
+
+    @PostMapping("topic/generate")
+    public ResponseEntity<GenerateTopicResponse> generateTopic(
+            @RequestBody @Valid GenerateTopicRequest request
+    ) {
+        GenerateTopicResponse response = geminiService.generateTopic(request.getName().toLowerCase(), request.getTermCount(), request.getDescription().toLowerCase(), request.getLevel().toLowerCase());
+        return ResponseEntity.ok(response);
     }
 }
