@@ -22,4 +22,10 @@ public class OAuth2Controller {
         AuthUserResponse userResponse = googleOAuth2Service.loginOAuth(request.get("code"));
         return ResponseEntity.ok(userResponse);
     }
+
+    @PostMapping(value = {"google-register", "google-signup"})
+    public ResponseEntity<AuthUserResponse> register(@RequestBody Map<String, String> request) {
+        AuthUserResponse userResponse = googleOAuth2Service.registerOAuth(request.get("code"));
+        return ResponseEntity.ok(userResponse);
+    }
 }

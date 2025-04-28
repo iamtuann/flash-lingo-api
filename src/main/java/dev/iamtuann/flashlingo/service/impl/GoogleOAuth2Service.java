@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GoogleOAuth2Service implements OAuth2Service {
@@ -36,6 +33,7 @@ public class GoogleOAuth2Service implements OAuth2Service {
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final GoogleIdTokenVerifier verifier;
+    private final Random random = new Random();
 
     @Value("${app.google.client-id}")
     private String clientId;
@@ -95,30 +93,58 @@ public class GoogleOAuth2Service implements OAuth2Service {
     public AuthUserResponse loginOAuth(String code) {
         String idToken = this.getIdToken(code);
         AuthUser authUser = this.verifyIdToken(idToken);
-        authUser = createOrUpdateUser(authUser);
+        if (!authUserRepository.existsByEmail(authUser.getEmail())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email is not registered");
+        }
+        authUser = updateUser(authUser);
         String token = jwtTokenProvider.generateToken(authUser);
         return new AuthUserResponse(authUser, token);
     }
 
     @Override
     @Transactional
-    public AuthUser createOrUpdateUser(AuthUser authUser) {
-        Optional<AuthUser> existUser = authUserRepository.findByEmail(authUser.getEmail());
-        if (existUser.isPresent()) {
-            if (existUser.get().getProvider().equals("System")) {
-                throw new APIException(HttpStatus.BAD_REQUEST, "Email is already used for an account on the system");
-            }
-            existUser.get().setFirstName(authUser.getFirstName());
-            existUser.get().setLastName(authUser.getLastName());
-            existUser.get().setAvatarUrl(authUser.getAvatarUrl());
-            return authUserRepository.save(existUser.get());
-        } else {
-            authUser.setProvider("Google");
-            Set<Role> roles = new HashSet<>();
-            roles.add(roleRepository.findByName(ERole.USER.getName()));
-            authUser.setRoles(roles);
-            authUser = authUserRepository.save(authUser);
-            return authUser;
+    public AuthUserResponse registerOAuth(String code) {
+        String idToken = this.getIdToken(code);
+        AuthUser authUser = this.verifyIdToken(idToken);
+        if (authUserRepository.existsByEmail(authUser.getEmail())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email account has been registered before, please login!");
         }
+        authUser = createUser(authUser);
+        String token = jwtTokenProvider.generateToken(authUser);
+        return new AuthUserResponse(authUser, token);
+    }
+
+    @Override
+    @Transactional
+    public AuthUser createUser(AuthUser authUser) {
+        authUser.setProvider("Google");
+        authUser.setUsername(generateUsername());
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName(ERole.USER.getName()));
+        authUser.setRoles(roles);
+        authUser = authUserRepository.save(authUser);
+        return authUser;
+    }
+
+    @Override
+    @Transactional
+    public AuthUser updateUser(AuthUser authUser) {
+        AuthUser existUser = authUserRepository.findAuthUserByEmail((authUser.getEmail()));
+
+        if (existUser.getProvider().equals("System")) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email is already used for an account on the system");
+        }
+        existUser.setFirstName(authUser.getFirstName());
+        existUser.setLastName(authUser.getLastName());
+        existUser.setAvatarUrl(authUser.getAvatarUrl());
+        return authUserRepository.save(existUser);
+    }
+
+    public String generateUsername() {
+        String username;
+        do {
+            username = "User" + String.format("%08d", random.nextInt(100_000_000));
+        } while (authUserRepository.existsByUsername(username));
+        return username;
     }
 }

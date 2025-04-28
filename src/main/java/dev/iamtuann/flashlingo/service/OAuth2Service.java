@@ -10,5 +10,9 @@ public interface OAuth2Service {
 
     AuthUserResponse loginOAuth(String code);
 
-    AuthUser createOrUpdateUser(AuthUser authUser);
+    AuthUserResponse registerOAuth(String code);
+
+    AuthUser createUser(AuthUser authUser);
+
+    AuthUser updateUser(AuthUser authUser);
 }

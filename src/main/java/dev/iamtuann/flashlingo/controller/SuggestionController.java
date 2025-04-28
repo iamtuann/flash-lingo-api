@@ -71,7 +71,7 @@ public class SuggestionController {
     public PageDto<PexelsPhotoDto> searchPhotos(
             @RequestParam String query,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "12") Integer perPage) {
+            @RequestParam(defaultValue = "20") Integer perPage) {
         return suggestionService.searchPhotos(query, page, perPage);
     }
 
