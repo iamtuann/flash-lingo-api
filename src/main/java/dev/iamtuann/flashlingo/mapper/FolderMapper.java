@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = {AuthUserMapper.class})
 public interface FolderMapper {
     FolderMapper INSTANCE = Mappers.getMapper( FolderMapper.class );
     Slugify slg = Slugify.builder().build();

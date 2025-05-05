@@ -10,6 +10,6 @@ import org.mapstruct.factory.Mappers;
 public interface AuthUserMapper {
     AuthUserMapper INSTANCE = Mappers.getMapper( AuthUserMapper.class );
 
-    @Mapping(target = "topicsNumber", expression = "java(authUser.getTopics().size())")
+    @Mapping(target = "topicsNumber", expression = "java(authUser.getTopics() != null ? authUser.getTopics().size() : 0)")
     AuthUserDto toDto(AuthUser authUser);
 }

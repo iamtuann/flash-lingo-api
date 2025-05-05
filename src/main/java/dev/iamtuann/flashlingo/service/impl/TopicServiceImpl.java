@@ -15,10 +15,6 @@ import dev.iamtuann.flashlingo.repository.TopicRepository;
 import dev.iamtuann.flashlingo.service.TopicService;
 import dev.iamtuann.flashlingo.utils.CheckPermission;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,7 +33,7 @@ public class TopicServiceImpl implements TopicService {
     private final TopicMapper topicMapper = TopicMapper.INSTANCE;
 
     @Override
-    @Cacheable(value = "topics", key = "#id")
+//    @Cacheable(value = "topics", key = "#id")
     public TopicDto findTopicById(Long id, Long authUserId) {
         if (checkPermission.viewableTopic(id, authUserId)) {
             Topic topic = topicRepository.findTopicById(id);
@@ -48,7 +44,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Cacheable(value = "topics")
+//    @Cacheable(value = "topics")
     public PageDto<TopicDto> searchTopics(String name, Long authId, Pageable pageable) {
         Page<Topic> topicPage = topicRepository.searchTopics(name, authId, pageable);
         List<TopicDto> topics =topicPage.stream()
@@ -57,7 +53,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Cacheable(value = "topics-folder")
+//    @Cacheable(value = "topics-folder")
     public PageDto<TopicDto> searchTopicsInFolder(String name, long folderId, Long authId, Pageable pageable) {
         if (!checkPermission.viewableFolder(folderId, authId)) {
             throw new NoPermissionException("access this folder");
@@ -69,7 +65,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Cacheable(value = "topics-user")
+//    @Cacheable(value = "topics-user")
     public PageDto<TopicDto> searchTopicsUser(String name, Long userId, Long authId, Pageable pageable) {
         Page<Topic> topicPage;
         if (authId != null && authId.equals(userId)) {
@@ -85,14 +81,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    @Caching(
-            put = {
-                    @CachePut(value = "topics", key = "#result.id")
-            },
-            evict = {
-                    @CacheEvict(value = "topics", allEntries = true)
-            }
-    )
+//    @Caching(
+//            put = {
+//                    @CachePut(value = "topics", key = "#result.id")
+//            },
+//            evict = {
+//                    @CacheEvict(value = "topics", allEntries = true)
+//            }
+//    )
     public TopicDto save(TopicRequest request, Long userId) {
         if (!checkPermission.editableTopic(request.getId(), userId)) {
             throw new NoPermissionException("edit this topic");
@@ -113,14 +109,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    @Caching(
-            put = {
-                    @CachePut(value = "topics", key = "#id")
-            },
-            evict = {
-                    @CacheEvict(value = "topics", allEntries = true)
-            }
-    )
+//    @Caching(
+//            put = {
+//                    @CachePut(value = "topics", key = "#id")
+//            },
+//            evict = {
+//                    @CacheEvict(value = "topics", allEntries = true)
+//            }
+//    )
     public TopicDto changeStatus(Long id, Integer status, Long userId) {
         Optional<Topic> topicOptional = topicRepository.findByIdAndCreatedById(id, userId);
         if (topicOptional.isEmpty()) {
@@ -141,7 +137,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "topics", allEntries = true)
+//    @CacheEvict(value = "topics", allEntries = true)
     public void deleteTopic(Long id, Long authUserId) {
         if (!checkPermission.editableTopic(id, authUserId)) {
             throw new NoPermissionException("delete this topic");

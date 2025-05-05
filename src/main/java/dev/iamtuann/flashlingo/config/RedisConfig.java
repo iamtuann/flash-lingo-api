@@ -13,6 +13,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -44,6 +45,40 @@ public class RedisConfig {
         return template;
     }
 
+    @Bean
+    public RedisTemplate<String, byte[]> ttsRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, byte[]> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        template.setValueSerializer(new RedisSerializer<byte[]>() {
+            @Override
+            public byte[] serialize(byte[] bytes) {
+                return bytes;
+            }
+
+            @Override
+            public byte[] deserialize(byte[] bytes) {
+                return bytes;
+            }
+        });
+        template.setHashValueSerializer(new RedisSerializer<byte[]>() {
+            @Override
+            public byte[] serialize(byte[] bytes) {
+                return bytes;
+            }
+
+            @Override
+            public byte[] deserialize(byte[] bytes) {
+                return bytes;
+            }
+        });
+
+        return template;
+    }
+
 //    @Bean
 //    public RedisTemplate<String, byte[]> redisTemplate(LettuceConnectionFactory connectionFactory) {
 //        RedisTemplate<String, byte[]> template = new RedisTemplate<>();
@@ -60,9 +95,9 @@ public class RedisConfig {
         return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(cacheConfig)
                 .withCacheConfiguration("topics", myDefaultCacheConfig(Duration.ofMinutes(5)))
-                .withCacheConfiguration("tts", myDefaultCacheConfig(Duration.ofDays(1)))
-                .withCacheConfiguration("photos", myDefaultCacheConfig(Duration.ofDays(1)))
-                .withCacheConfiguration("gen-topics", myDefaultCacheConfig(Duration.ofDays(1)))
+                .withCacheConfiguration("tts", myDefaultCacheConfig(Duration.ofDays(7)))
+                .withCacheConfiguration("photos", myDefaultCacheConfig(Duration.ofDays(7)))
+                .withCacheConfiguration("gen-topics", myDefaultCacheConfig(Duration.ofDays(2)))
                 .build();
     }
 

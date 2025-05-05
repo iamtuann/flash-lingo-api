@@ -10,6 +10,7 @@ import dev.iamtuann.flashlingo.service.StudyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -35,6 +36,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     @Override
+    @Transactional
     public void updateDailyTime(Long userId, long durationSeconds) {
         AuthUser user = authUserRepository.findAuthUserById(userId);
         LocalDateTime now = LocalDateTime.now();
@@ -44,14 +46,6 @@ public class StudyServiceImpl implements StudyService {
         long secondsSinceMidnight = Duration.between(midnight, now).getSeconds();
 
         StudyStat todayStat;
-//                = studyStatRepository.findByAuthUserIdAndStatDate(userId, today)
-//                .orElseGet(() -> {
-//                    StudyStat newStat = new StudyStat();
-//                    newStat.setAuthUser(user);
-//                    newStat.setStatDate(today);
-//                    newStat.setTotalDurationSeconds(0L);
-//                    return newStat;
-//                });
         Optional<StudyStat> optional = studyStatRepository.findByAuthUserIdAndStatDate(userId, today);
         if (optional.isPresent()) {
             todayStat = optional.get();
