@@ -87,7 +87,7 @@ public class AuthUserServiceTest {
         AuthUserResponse response = authUserService.login(loginDto);
         assertNotNull(response);
         assertEquals(userDetails.getId(), response.getId());
-        assertEquals(userDetails.getUsername(), response.getEmail());
+        assertEquals(userDetails.getEmail(), response.getEmail());
         assertEquals(userDetails.getFirstName(), response.getFirstName());
         assertEquals(userDetails.getLastName(), response.getLastName());
         assertEquals("fake-jwt-token", response.getToken());

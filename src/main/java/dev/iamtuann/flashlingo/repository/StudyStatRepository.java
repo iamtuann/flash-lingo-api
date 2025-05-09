@@ -16,5 +16,5 @@ public interface StudyStatRepository extends JpaRepository<StudyStat, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<StudyStat> findByAuthUserIdAndStatDate(Long userId, LocalDate date);
 
-    List<StudyStat> findByAuthUserIdAndStatDateBetween(Long userId, LocalDate start, LocalDate end);
+    List<StudyStat> findByAuthUserIdAndStatDateBetweenOrderByStatDateAsc(Long userId, LocalDate start, LocalDate end);
 }

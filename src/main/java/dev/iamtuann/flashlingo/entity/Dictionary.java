@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "dictionary_new")
+@Table(name = "dictionary")
 @Getter
 @Setter
 public class Dictionary {

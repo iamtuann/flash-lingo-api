@@ -45,6 +45,6 @@ public class FolderMapperTest {
         assertEquals(folder.getId(), folderDto.getId());
         assertEquals(folder.getName(), folderDto.getName());
         assertEquals(folder.getSlug(), folderDto.getSlug());
-        assertNull(folderDto.getTopicIds());
+        assertEquals(1, folderDto.getTopicIds().size());
     }
 }

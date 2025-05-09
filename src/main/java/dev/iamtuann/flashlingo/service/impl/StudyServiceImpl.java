@@ -30,7 +30,7 @@ public class StudyServiceImpl implements StudyService {
         if (startDate.isAfter(endDate)) {
             throw new APIException(HttpStatus.BAD_REQUEST ,"Start date cannot be after end date");
         }
-        List<StudyStat> stats = studyStatRepository.findByAuthUserIdAndStatDateBetween(userId, startDate, endDate);
+        List<StudyStat> stats = studyStatRepository.findByAuthUserIdAndStatDateBetweenOrderByStatDateAsc(userId, startDate, endDate);
 
         return stats.stream().map(StudyStatDto::new).collect(Collectors.toList());
     }

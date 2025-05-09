@@ -31,6 +31,7 @@ public interface TopicMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "topicsNumber", expression = "java(authUser.getTopics().size())")
     AuthUserDto AuthUserToAuthUserDto(AuthUser authUser);
 
     default void updateTopicFromRequest(TopicRequest request, @MappingTarget Topic topic) {

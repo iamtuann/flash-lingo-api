@@ -97,7 +97,7 @@ public class RedisConfig {
                 .withCacheConfiguration("topics", myDefaultCacheConfig(Duration.ofMinutes(5)))
                 .withCacheConfiguration("tts", myDefaultCacheConfig(Duration.ofDays(7)))
                 .withCacheConfiguration("photos", myDefaultCacheConfig(Duration.ofDays(7)))
-                .withCacheConfiguration("gen-topics", myDefaultCacheConfig(Duration.ofDays(2)))
+                .withCacheConfiguration("gen-topics", myDefaultCacheConfig(Duration.ofDays(7)))
                 .build();
     }
 

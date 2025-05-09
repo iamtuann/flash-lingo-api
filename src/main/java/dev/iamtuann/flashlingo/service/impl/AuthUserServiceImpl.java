@@ -105,7 +105,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             authUser.setPassword(passwordEncoder.encode(newPassword));
             authUserRepository.save(authUser);
         } else {
-            throw new APIException(HttpStatus.UNAUTHORIZED, "Wrong password");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Wrong password");
         }
     }
 
