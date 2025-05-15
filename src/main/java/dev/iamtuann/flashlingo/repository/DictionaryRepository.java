@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository(value = "dictionaryRepository")
 public interface DictionaryRepository extends JpaRepository<Dictionary, Integer> {
@@ -25,4 +26,6 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Integer>
     @Query(value = "SELECT DISTINCT d.pronunciation from Dictionary d " +
             "WHERE (d.word = :word) ")
     String getPronunciation(String word);
+
+    Optional<Dictionary> findByWord(String word);
 }

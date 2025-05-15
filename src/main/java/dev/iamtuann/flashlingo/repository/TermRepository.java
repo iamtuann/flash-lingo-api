@@ -16,12 +16,12 @@ public interface TermRepository extends JpaRepository<Term, Long> {
     List<Term> findAllByTopicIdOrderByRankAsc(long topicId);
 
     // Decrease rank
-    @Modifying
-    @Query("UPDATE Term t SET t.rank = t.rank - 1 WHERE t.topic.id = :topicId AND t.rank > :oldRank AND t.rank <= :newRank")
-    void decrementRanks(Long topicId, int oldRank, int newRank);
+//    @Modifying
+//    @Query("UPDATE Term t SET t.rank = t.rank - 1 WHERE t.topic.id = :topicId AND t.rank > :oldRank AND t.rank <= :newRank")
+//    void decrementRanks(Long topicId, int oldRank, int newRank);
 
     // Increase rank
-    @Modifying
-    @Query("UPDATE Term t SET t.rank = t.rank + 1 WHERE t.topic.id = :topicId AND t.rank >= :newRank AND t.rank < :oldRank")
-    void incrementRanks(Long topicId, int oldRank, int newRank);
+//    @Modifying
+//    @Query("UPDATE Term t SET t.rank = t.rank + 1 WHERE t.topic.id = :topicId AND t.rank >= :newRank AND t.rank < :oldRank")
+//    void incrementRanks(Long topicId, int oldRank, int newRank);
 }

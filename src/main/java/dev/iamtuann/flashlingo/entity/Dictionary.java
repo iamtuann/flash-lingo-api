@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 @Entity
 @Table(name = "dictionary")
 @Getter
@@ -25,5 +29,28 @@ public class Dictionary {
     @Lob
     @Column(name = "definition")
     private String definition;
+
+    @Lob
+    @Column(name = "synonyms")
+    private String synonyms;
+
+    @Lob
+    @Column(name = "antonyms")
+    private String antonyms;
+
+    public List<String> getSynonyms() {
+        return convertStringToList(this.synonyms);
+    }
+
+    public List<String> getAntonyms() {
+        return convertStringToList(this.antonyms);
+    }
+
+    private List<String> convertStringToList(String str) {
+        if (str == null || str.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(str.split(","));
+    }
 
 }

@@ -110,6 +110,8 @@ public class GeminiServiceImpl implements GeminiService {
                 .append("    - definition: short Vietnamese meaning.\n")
                 .append("    - pronunciation: IPA style.\n")
                 .append("    - example: short sentence (8–16 words).\n")
+                .append("    - synonyms: A list String of 3 synonyms (if any).\n")
+                .append("    - antonyms: A list String of 3 antonyms (if any).\n")
                 .append("- shortPassage: a short paragraph using some of the terms above, written smoothly and naturally like a travel story or daily moment. Keep it clear and engaging. Do not use markdown.\n")
                 .append("\nStrictly return JSON. Do not use markdown (no ```json).");
 

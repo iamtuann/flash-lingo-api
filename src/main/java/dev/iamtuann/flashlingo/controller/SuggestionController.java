@@ -82,4 +82,12 @@ public class SuggestionController {
         GenerateTopicResponse response = geminiService.generateTopic(request.getName().toLowerCase(), request.getTermCount(), request.getDescription().toLowerCase(), request.getLevel().toLowerCase());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("thesaurus")
+    public ResponseEntity<WordThesaurus> getThesaurus(
+            @RequestParam(value = "word", defaultValue = "") String word
+    ) {
+        WordThesaurus thesaurus = suggestionService.getWordThesaurus(word);
+        return ResponseEntity.ok(thesaurus);
+    }
 }

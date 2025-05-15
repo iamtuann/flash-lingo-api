@@ -1,12 +1,10 @@
 package dev.iamtuann.flashlingo.service.impl;
 
 import dev.iamtuann.flashlingo.entity.Dictionary;
-import dev.iamtuann.flashlingo.model.PageDto;
-import dev.iamtuann.flashlingo.model.PexelsPhotoDto;
-import dev.iamtuann.flashlingo.model.PexelsResponse;
-import dev.iamtuann.flashlingo.model.WordDto;
+import dev.iamtuann.flashlingo.model.*;
 import dev.iamtuann.flashlingo.repository.DictionaryRepository;
 import dev.iamtuann.flashlingo.service.SuggestionService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -14,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +21,9 @@ public class SuggestionServiceImpl implements SuggestionService {
     private final DictionaryRepository dictionaryRepository;
 
     private final RestTemplate restTemplate;
+
+    private static final String DATAMUSE_API = "https://api.datamuse.com/words";
+    private static final int MAX_RESULTS = 10;
 
     @Value("${app.pexels.api-key}")
     private String pexelsApiKey;
@@ -104,5 +102,61 @@ public class SuggestionServiceImpl implements SuggestionService {
         } else {
             throw new RuntimeException("Failed to fetch photos from Pexels: " + response.getStatusCode());
         }
+    }
+
+    @Override
+    public WordThesaurus getWordThesaurus(String word) {
+        Optional<Dictionary> dictionary = dictionaryRepository.findByWord(word.toLowerCase());
+        if (dictionary.isEmpty()) {
+            return new WordThesaurus(word, Collections.emptyList(), Collections.emptyList());
+        }
+        WordThesaurus thesaurus = new WordThesaurus();
+        thesaurus.setWord(word);
+        Dictionary d = dictionary.get();
+        if (d.getSynonyms() == null || d.getSynonyms().isEmpty()) {
+            d = crawSynonyms(d);
+        }
+        if (d.getAntonyms() == null || d.getAntonyms().isEmpty()) {
+            d = crawAntonyms(d);
+        }
+        thesaurus.setSynonyms(d.getSynonyms());
+        thesaurus.setAntonyms(d.getAntonyms());
+        return thesaurus;
+    }
+
+    private Dictionary crawSynonyms(Dictionary dictionary) {
+        List<DatamuseWord> synonymWords = fetchFromDatamuse("rel_syn", dictionary.getWord().toLowerCase());
+        String synonyms = synonymWords.stream().map(DatamuseWord::getWord).collect(Collectors.joining(","));
+        dictionary.setSynonyms(synonyms);
+        return dictionaryRepository.save(dictionary);
+    }
+
+    private Dictionary crawAntonyms(Dictionary dictionary) {
+        List<DatamuseWord> antonymWords = fetchFromDatamuse("rel_ant", dictionary.getWord().toLowerCase());
+        String antonyms = antonymWords.stream().map(DatamuseWord::getWord).collect(Collectors.joining(","));
+        dictionary.setAntonyms(antonyms);
+        return dictionaryRepository.save(dictionary);
+    }
+
+    private List<DatamuseWord> fetchFromDatamuse(String relation, String word) {
+        String url = String.format("%s?%s=%s&max=%d", DATAMUSE_API, relation, word, MAX_RESULTS);
+
+        try {
+            ResponseEntity<DatamuseWord[]> response = restTemplate.getForEntity(url, DatamuseWord[].class);
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return Arrays.asList(response.getBody());
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+
+    @Data
+    private static class DatamuseWord {
+        private String word;
+        private int score;
     }
 }

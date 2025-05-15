@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,9 +19,11 @@ public class TermDto {
     private String pronunciation;
     private String partOfSpeech;
     private String example;
-    private String level;
     private String imageUrl;
-    private Integer rank;
+    private List<String> synonyms;
+    private List<String> antonyms;
+    private String level;
+//    private Integer rank;
     private Long topicId;
     private Date modifiedAt;
 }

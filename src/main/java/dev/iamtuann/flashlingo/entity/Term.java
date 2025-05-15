@@ -5,7 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -52,4 +55,34 @@ public class Term {
     @Column(name = "part_of_speech", length = 45)
     private String partOfSpeech;
 
+    @Lob
+    @Column(name = "synonyms")
+    private String synonyms;
+
+    @Lob
+    @Column(name = "antonyms")
+    private String antonyms;
+
+    public List<String> getSynonyms() {
+        return convertStringToList(this.synonyms);
+    }
+
+    public void setSynonyms(List<String> synonyms) {
+        this.synonyms = String.join(",", synonyms);
+    }
+
+    public void setAntonyms(List<String> antonyms) {
+        this.antonyms = String.join(",", antonyms);
+    }
+
+    public List<String> getAntonyms() {
+        return convertStringToList(this.antonyms);
+    }
+
+    private List<String> convertStringToList(String str) {
+        if (str == null || str.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(str.split(","));
+    }
 }

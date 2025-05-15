@@ -40,9 +40,15 @@ public interface TermMapper {
         if ( request.getImageUrl() != null ) {
             term.setImageUrl(request.getImageUrl());
         }
-        if ( request.getRank() != null ) {
-            term.setRank(request.getRank());
+        if (request.getSynonyms() != null) {
+            term.setSynonyms(request.getSynonyms());
         }
+        if (request.getAntonyms() != null) {
+            term.setAntonyms(request.getAntonyms());
+        }
+//        if ( request.getRank() != null ) {
+//            term.setRank(request.getRank());
+//        }
 
     }
 }

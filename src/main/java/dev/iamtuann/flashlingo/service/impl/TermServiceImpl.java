@@ -2,7 +2,6 @@ package dev.iamtuann.flashlingo.service.impl;
 
 import dev.iamtuann.flashlingo.entity.Term;
 import dev.iamtuann.flashlingo.entity.Topic;
-import dev.iamtuann.flashlingo.exception.BadRequestException;
 import dev.iamtuann.flashlingo.exception.NoPermissionException;
 import dev.iamtuann.flashlingo.exception.ResourceNotFoundException;
 import dev.iamtuann.flashlingo.mapper.TermMapper;
@@ -43,7 +42,7 @@ public class TermServiceImpl implements TermService {
         } else {
             term = termRepository.findByIdAndTopicId(request.getId(), request.getTopicId())
                     .orElseThrow(() -> new ResourceNotFoundException("Term", "id", request.getId()));
-            this.changeRank(request.getTopicId(), term.getRank(), request.getRank());
+//            this.changeRank(request.getTopicId(), term.getRank(), request.getRank());
             termMapper.updateTermFormRequest(request, term);
         }
         Term newTerm = termRepository.save(term);
@@ -78,32 +77,32 @@ public class TermServiceImpl implements TermService {
         Term term = termRepository.findByIdAndTopicId(request.getId(), request.getTopicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Term", "id", request.getId()));
         termRepository.delete(term);
-        termRepository.decrementRanks(term.getTopic().getId(), term.getRank(), Integer.MAX_VALUE);
+//        termRepository.decrementRanks(term.getTopic().getId(), term.getRank(), Integer.MAX_VALUE);
     }
 
-    public void changeRank(Long topicId, Integer oldRank, Integer newRank) {
-        if (newRank == null) {
-            return;
-        }
-        if (newRank > oldRank) {
-            termRepository.decrementRanks(topicId, oldRank, newRank);
-        } else if (newRank < oldRank) {
-            termRepository.incrementRanks(topicId, oldRank, newRank);
-        }
-    }
+//    public void changeRank(Long topicId, Integer oldRank, Integer newRank) {
+//        if (newRank == null) {
+//            return;
+//        }
+//        if (newRank > oldRank) {
+//            termRepository.decrementRanks(topicId, oldRank, newRank);
+//        } else if (newRank < oldRank) {
+//            termRepository.incrementRanks(topicId, oldRank, newRank);
+//        }
+//    }
 
     public Term createTerm(TermRequest request) {
         Term term = new Term();
         Topic topic = topicRepository.findTopicById(request.getTopicId());
-        Integer rank = request.getRank();
-        if (request.getRank() == null) {
-            throw new BadRequestException("rank", null, "New term must have ranking");
-        }
-        if (rank > topic.getTerms().size()) {
-            rank = topic.getTerms().size();
+//        Integer rank = request.getRank();
+//        if (request.getRank() == null) {
+//            throw new BadRequestException("rank", null, "New term must have ranking");
+//        }
+//        if (rank > topic.getTerms().size()) {
+//            rank = topic.getTerms().size();
 //            throw new BadRequestException("rank", request.getRank(), "Rank cannot be larger size");
-        }
-        termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, rank);
+//        }
+//        termRepository.incrementRanks(request.getTopicId(), Integer.MAX_VALUE, rank);
         term.setTopic(topic);
         termMapper.updateTermFormRequest(request, term);
         return term;
