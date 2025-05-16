@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - flash_net
+
+  redis:
+    image: redis:7.0.15
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - flash_net
+
+  backend:
+    build: .
+    container_name: flash-backend
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      APP_JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      APP_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      APP_GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      APP_GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+      PEXELS_API_KEY: ${PEXELS_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_ENDPOINT: ${GEMINI_ENDPOINT}
+    volumes:
+      - E:/key/google-cloud-tts.json:/app/key/google-cloud-tts.json:ro
+    networks:
+      - flash_net
+
+volumes:
+  mysql_data:
+
+networks:
+  flash_net:

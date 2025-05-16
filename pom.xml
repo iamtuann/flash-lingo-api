@@ -11,7 +11,7 @@
     <groupId>dev.iamtuann</groupId>
     <artifactId>flash-lingo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>flash-lingo-be</name>
     <description>flash-lingo-be</description>
     <url/>
