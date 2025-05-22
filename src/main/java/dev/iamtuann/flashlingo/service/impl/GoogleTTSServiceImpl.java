@@ -4,7 +4,6 @@ import com.google.cloud.texttospeech.v1.*;
 import dev.iamtuann.flashlingo.service.TextToSpeechService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,15 +14,15 @@ import org.springframework.web.server.ResponseStatusException;
 public class GoogleTTSServiceImpl implements TextToSpeechService {
 
     private final TextToSpeechClient textToSpeechClient;
-    private final RedisTemplate<String, byte[]> ttsRedisTemplate;
+//    private final RedisTemplate<String, byte[]> ttsRedisTemplate;
 
     @Override
     public byte[] synthesizeSpeech(String text) {
-        String cacheKey = "tts:" + text.hashCode();
-        byte[] cachedAudio = ttsRedisTemplate.opsForValue().get(cacheKey);
-        if (cachedAudio != null) {
-            return cachedAudio;
-        }
+//        String cacheKey = "tts:" + text.hashCode();
+//        byte[] cachedAudio = ttsRedisTemplate.opsForValue().get(cacheKey);
+//        if (cachedAudio != null) {
+//            return cachedAudio;
+//        }
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
@@ -37,7 +36,7 @@ public class GoogleTTSServiceImpl implements TextToSpeechService {
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
             byte[] audioData = response.getAudioContent().toByteArray();
 
-            ttsRedisTemplate.opsForValue().set(cacheKey, audioData);
+//            ttsRedisTemplate.opsForValue().set(cacheKey, audioData);
 
             return audioData;
         } catch (Exception e) {

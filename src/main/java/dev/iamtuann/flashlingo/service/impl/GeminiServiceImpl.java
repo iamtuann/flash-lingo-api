@@ -84,7 +84,7 @@ public class GeminiServiceImpl implements GeminiService {
     }
 
     @Override
-    @Cacheable(value = "gen-topics")
+//    @Cacheable(value = "gen-topics")
     public GenerateTopicResponse generateTopic(String topicName, int termCount, @Nullable String description, @Nullable String level) {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();

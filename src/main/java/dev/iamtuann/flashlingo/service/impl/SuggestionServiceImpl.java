@@ -69,7 +69,7 @@ public class SuggestionServiceImpl implements SuggestionService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "photos")
+//    @Cacheable(value = "photos")
     public PageDto<PexelsPhotoDto> searchPhotos(String query, Integer page, Integer perPage) {
         // Build URL with query parameters
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.pexels.com/v1/search")
