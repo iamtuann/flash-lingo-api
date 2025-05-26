@@ -15,19 +15,15 @@ import java.util.List;
 
 @Configuration
 public class GoogleCloudConfig {
-    @Value("${app.google.cloud.credentials}")
-    private Resource googleCredentials;
+    @Value("${GOOGLE_APPLICATION_CREDENTIALS:}")
+    private String credentialsPath;
 
     @Bean
     public TextToSpeechClient textToSpeechClient() throws IOException {
-        GoogleCredentials credentials;
-        if (googleCredentials.getFilename().startsWith("file:")) {
-            credentials = GoogleCredentials.fromStream(new FileInputStream(googleCredentials.getFilename().substring(5)));
-        } else {
-            credentials = GoogleCredentials.fromStream(googleCredentials.getInputStream());
-        }
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new FileInputStream(credentialsPath))
+                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
 
-        credentials.createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
         TextToSpeechSettings settings = TextToSpeechSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
                 .build();
