@@ -1,0 +1,42 @@
+# Maven
+target/
+!target/*.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.eclipse/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+logs/
+
+# Runtime
+*.pid
+*.tmp
+
+# Documentation
+README.md
+docs/
+
+# Docker
+Dockerfile*
+.dockerignore
+
+# Environment files
+.env*
+application-local.*
+application-dev.*
+application-prod.*

@@ -40,3 +40,4 @@ application-*.yml
 google-credentials.json
 !.env.example
 !application-example.yml
+!application-prod.yml

@@ -1,21 +1,22 @@
-# Sử dụng OpenJDK 17 làm base image
-FROM openjdk:17-jdk-slim
+# Simple Dockerfile for Railway
+FROM maven:3.9.4-openjdk-17-slim AS build
 
-# Đặt thư mục làm việc
 WORKDIR /app
 
-# Copy file JAR vào container
-COPY target/*.jar app.jar
+# Copy and build
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Tạo thư mục cho credentials
-RUN mkdir -p /app/config
+# Runtime
+FROM openjdk:17-jre-slim
 
-# Đặt environment variable cho Google credentials
-#ENV GOOGLE_APPLICATION_CREDENTIALS=/app/config/google-credentials.json
+WORKDIR /app
 
-# Expose port
+# Copy jar file
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose port (Railway will inject PORT env var)
 EXPOSE 8080
 
-# Chạy ứng dụng
-#ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=prod"]
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Run application
+CMD ["java", "-jar", "app.jar"]
