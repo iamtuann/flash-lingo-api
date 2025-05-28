@@ -1,5 +1,5 @@
 # Simple Dockerfile for Railway
-FROM maven:3.9.4-openjdk-17-slim AS build
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
