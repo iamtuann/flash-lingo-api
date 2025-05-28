@@ -3,7 +3,8 @@ package dev.iamtuann.flashlingo.config;
 import dev.iamtuann.flashlingo.security.JwtAuthenticationEntryPoint;
 import dev.iamtuann.flashlingo.security.JwtAuthenticationFilter;
 import dev.iamtuann.flashlingo.security.UserDetailsServiceImpl;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +25,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailService;
 
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     private final JwtAuthenticationFilter authenticationFilter;
+
+    @Value("${app.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,9 +60,12 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        List<String> domains = !allowedOrigins.isEmpty()
+                ? Arrays.asList(allowedOrigins.split(","))
+                : Arrays.asList("http://10.10.11.6:5173", "http://localhost:5173");
         CorsConfiguration cors = new CorsConfiguration();
 //        cors.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-        cors.setAllowedOrigins(Arrays.asList("http://10.10.11.6:5173", "http://localhost:5173"));
+        cors.setAllowedOrigins(domains);
         cors.setAllowedMethods(Arrays.asList("GET","POST","HEAD","OPTIONS","PUT","PATCH","DELETE"));
         cors.setAllowedHeaders(Collections.singletonList("*"));
         cors.setAllowCredentials(true);

@@ -8,22 +8,28 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.StringUtils;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
 @Configuration
-@Profile({"dev", "!prod"})
-public class GoogleCloudConfig {
-    @Value("${GOOGLE_APPLICATION_CREDENTIALS:}")
-    private String credentialsPath;
+@Profile("prod")
+public class GoogleCloudConfigProd {
+    @Value("${GOOGLE_CREDENTIALS_JSON:}")
+    private String googleCredentialsJson;
 
     @Bean
     public TextToSpeechClient textToSpeechClient() throws IOException {
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new FileInputStream(credentialsPath))
-                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+        GoogleCredentials credentials;
+        if (StringUtils.hasText(googleCredentialsJson)) {
+            credentials = GoogleCredentials
+                    .fromStream(new ByteArrayInputStream(googleCredentialsJson.getBytes()))
+                    .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+        } else {
+            credentials = GoogleCredentials.getApplicationDefault().createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+        }
 
         TextToSpeechSettings settings = TextToSpeechSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
